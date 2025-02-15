@@ -1,22 +1,18 @@
 import useGreeting from "../hooks/useGreeting";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import Typography from "@mui/material/Typography";
+import { CircularProgress } from "@mui/material";
 
 function HelloWorldGreeting() {
   const { greeting, error, isLoading } = useGreeting();
 
   return (
     <>
-      {isLoading && (
-        <p>
-          <FontAwesomeIcon icon={faSpinner} spin /> Loading...
-        </p>
-      )}
+      {isLoading && <CircularProgress />}
       {error && <p>Error: {error.message}</p>}
       {greeting && (
-        <p>
+        <Typography variant="h6" sx={{ color: "text.secondary" }}>
           The server says: <code>{greeting}</code>
-        </p>
+        </Typography>
       )}
     </>
   );

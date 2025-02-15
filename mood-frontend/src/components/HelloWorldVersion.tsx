@@ -1,23 +1,14 @@
 import useAppVersion from "../hooks/useAppVersion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Chip, CircularProgress } from "@mui/material";
 
 function HelloWorldVersion() {
   const { version, error, isLoading } = useAppVersion();
 
   return (
     <>
-      {isLoading && (
-        <p>
-          <FontAwesomeIcon icon={faSpinner} spin /> Loading...
-        </p>
-      )}
+      {isLoading && <CircularProgress size="2rem" />}
       {error && <p>Error: {error.message}</p>}
-      {version && (
-        <p>
-          Mood version: <code>{version}</code>
-        </p>
-      )}
+      {version && <Chip label={`Mood ${version}`} />}
     </>
   );
 }
