@@ -1,3 +1,5 @@
+import HelloWorldGreeting from "../components/HelloWorldGreeting";
+import HelloWorldVersion from "../components/HelloWorldVersion";
 import Logo from "../components/Logo";
 
 function HelloWorldPage() {
@@ -5,6 +7,8 @@ function HelloWorldPage() {
     <>
       <Logo />
       <p>Welcome to Mood!</p>
+      <HelloWorldGreeting />
+      <HelloWorldVersion />
     </>
   );
 }

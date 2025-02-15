@@ -7,9 +7,12 @@
     {
       "name": "mood-backend",
       "path": "mood-backend"
+    },
+    {
+      "path": "."
     }
   ],
   "settings": {
-    "jest.disabledWorkspaceFolders": ["mood"]
+    "jest.disabledWorkspaceFolders": ["mood", "mood-frontend"]
   }
 }

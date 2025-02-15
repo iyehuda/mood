@@ -5,6 +5,7 @@ import express from "express";
 import helloWorldRouter from "./routes/hello-world";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import cors from "cors";
 
 const apiSpecs = swaggerJSDoc({
     apis: ["src/routes/*.ts"],
@@ -22,6 +23,7 @@ export function createApp() {
     const app = express();
 
     app.use(bodyParser.json());
+    app.use(cors());
 
     if (environment !== Environment.PROD) {
         app.use("/docs", swaggerUI.serve, swaggerUI.setup(apiSpecs));
