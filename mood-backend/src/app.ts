@@ -6,6 +6,7 @@ import helloWorldRouter from "./routes/hello-world";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
+import errorHandler from "error-handler-json";
 
 const apiSpecs = swaggerJSDoc({
   apis: ["src/routes/*.ts"],
@@ -31,6 +32,7 @@ export function createApp() {
 
   app.use("/hello", helloWorldRouter);
   app.use(errors());
+  app.use(errorHandler({ includeStack: environment === Environment.DEV }));
 
   return app;
 }

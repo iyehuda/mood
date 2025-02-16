@@ -32,7 +32,7 @@ const getVersionSchema = {
  *           text/plain:
  *             example: Hello World!
  */
-helloWorldRouter.get("/world", celebrate(getMessageSchema), controller.getMessage.bind(controller));
+helloWorldRouter.get("/world", celebrate(getMessageSchema), controller.getMessage);
 
 /**
  * @swagger
@@ -47,10 +47,18 @@ helloWorldRouter.get("/world", celebrate(getMessageSchema), controller.getMessag
  *           text/plain:
  *             example: 1.0.0
  */
-helloWorldRouter.get(
-  "/version",
-  celebrate(getVersionSchema),
-  controller.getVersion.bind(controller),
-);
+helloWorldRouter.get("/version", celebrate(getVersionSchema), controller.getVersion);
+
+/**
+ * @swagger
+ * /hello/not-found:
+ *   get:
+ *     summary: Not found
+ *     tags: [Hello World]
+ *     responses:
+ *       404:
+ *         description: Not found
+ */
+helloWorldRouter.get("/not-found", controller.notFound);
 
 export default helloWorldRouter;

@@ -20,3 +20,12 @@ describe("GET /hello/version", () => {
     expect(response.text).toBe("1.0.0");
   });
 });
+
+describe("GET /hello/not-found", () => {
+  it("should return 404", async () => {
+    const response = await request(app).get("/hello/not-found");
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Oops! Not found");
+  });
+});
