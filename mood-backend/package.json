@@ -1,6 +1,9 @@
 {
   "name": "mood-backend",
+  "private": true,
   "version": "1.0.0",
+  "author": "Yehuda Chikvashvili, Or Bachar, Raz Alon, Omer Yerushalmi, Yoav Buchnik",
+  "description": "Mood application backend",
   "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
@@ -9,9 +12,6 @@
     "lint": "prettier --write . && eslint --fix .",
     "test": "jest"
   },
-  "author": "Yehuda Chikvashvili, Or Bachar, Raz Alon, Omer Yerushalmi, Yoav Buchnik",
-  "license": "ISC",
-  "description": "Mood application backend",
   "dependencies": {
     "body-parser": "^1.20.3",
     "celebrate": "^15.0.3",

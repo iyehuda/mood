@@ -1,7 +1,9 @@
 {
   "name": "mood-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Yehuda Chikvashvili, Or Bachar, Raz Alon, Omer Yerushalmi, Yoav Buchnik",
+  "description": "Mood application frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",
