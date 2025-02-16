@@ -7,6 +7,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
 import errorHandler from "error-handler-json";
+import morgan from "morgan";
 
 const apiSpecs = swaggerJSDoc({
   apis: ["src/routes/*.ts"],
@@ -23,6 +24,7 @@ const apiSpecs = swaggerJSDoc({
 export function createApp() {
   const app = express();
 
+  app.use(morgan(environment === Environment.PROD ? "combined" : "dev"));
   app.use(bodyParser.json());
   app.use(cors());
 

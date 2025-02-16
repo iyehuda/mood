@@ -38,6 +38,7 @@ export default tseslint.config(
       "one-var": ["error", "never"],
       "sort-imports": "off",
       "no-underscore-dangle": "off",
+      "no-ternary": "off",
     },
   },
   {
