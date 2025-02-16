@@ -13,10 +13,10 @@ const controller = new HelloWorldController();
  *   description: Dummy routes
  */
 const getMessageSchema = {
-    [Segments.QUERY]: Joi.object({}),
+  [Segments.QUERY]: Joi.object({}),
 };
 const getVersionSchema = {
-    [Segments.QUERY]: Joi.object({}),
+  [Segments.QUERY]: Joi.object({}),
 };
 
 /**
@@ -48,9 +48,9 @@ helloWorldRouter.get("/world", celebrate(getMessageSchema), controller.getMessag
  *             example: 1.0.0
  */
 helloWorldRouter.get(
-    "/version",
-    celebrate(getVersionSchema),
-    controller.getVersion.bind(controller),
+  "/version",
+  celebrate(getVersionSchema),
+  controller.getVersion.bind(controller),
 );
 
 export default helloWorldRouter;

@@ -2,11 +2,11 @@
 import { Request, Response } from "express";
 
 export default class HelloWorldController {
-    getMessage(req: Request, res: Response) {
-        res.send("Hello World!");
-    }
+  getMessage(req: Request, res: Response) {
+    res.send("Hello World!");
+  }
 
-    getVersion(req: Request, res: Response) {
-        res.send("1.0.0");
-    }
+  getVersion(req: Request, res: Response) {
+    res.send("1.0.0");
+  }
 }
