@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="black">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Moonscape');
+        text {
+            font-family: 'Moonscape', sans-serif;
+            font-size: 64px;
+            font-weight: bold;
+        }
+    </style>
+
+    <text x="4" y="46" fill="rgb(30, 30, 30)">m</text>
+    <line x1="8" y1="51" x2="57" y2="51" stroke="rgb(30, 30, 30)" stroke-width="4" />
+</svg>

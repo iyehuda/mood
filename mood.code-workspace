@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "name": "mood-frontend",
+      "path": "mood-frontend"
+    },
+    {
+      "name": "mood-backend",
+      "path": "mood-backend"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "jest.disabledWorkspaceFolders": ["mood", "mood-frontend"]
+  }
+}
