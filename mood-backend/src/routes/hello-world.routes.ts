@@ -1,7 +1,7 @@
 import { Segments, celebrate } from "celebrate";
 import Joi from "joi";
 import { Router } from "express";
-import HelloWorldController from "../controllers/hello-world-controller";
+import HelloWorldController from "../controllers/hello-world.controller";
 
 const helloWorldRouter = Router();
 const controller = new HelloWorldController();

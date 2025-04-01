@@ -2,7 +2,8 @@ import { Environment, environment } from "./config";
 import bodyParser from "body-parser";
 import { errors } from "celebrate";
 import express from "express";
-import helloWorldRouter from "./routes/hello-world";
+import helloWorldRouter from "./routes/hello-world.routes";
+import spotifyRouter from "./routes/spotify.routes";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
@@ -21,6 +22,7 @@ const apiSpecs = swaggerJSDoc({
   },
 });
 
+// eslint-disable-next-line max-statements
 export function createApp() {
   const app = express();
 
@@ -33,6 +35,7 @@ export function createApp() {
   }
 
   app.use("/hello", helloWorldRouter);
+  app.use("/spotify", spotifyRouter);
   app.use(errors());
   app.use(errorHandler({ includeStack: environment === Environment.DEV }));
 
