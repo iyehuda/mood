@@ -8,7 +8,7 @@ const router = Router();
  * /spotify/search-songs:
  *   post:
  *     summary: Search for songs on Spotify and get their links
- *     description: Takes an array of song names and returns their Spotify links
+ *     description: Takes an array of songs with titles and artists and returns their Spotify links
  *     tags:
  *       - Spotify
  *     requestBody:
@@ -23,9 +23,20 @@ const router = Router();
  *               songs:
  *                 type: array
  *                 items:
- *                   type: string
- *                 description: Array of song names to search for
- *                 example: ["Shape of You", "Blinding Lights"]
+ *                   type: object
+ *                   required:
+ *                     - title
+ *                     - artist
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                       description: Title of the song
+ *                       example: "Shape of You"
+ *                     artist:
+ *                       type: string
+ *                       description: Name of the artist
+ *                       example: "Ed Sheeran"
+ *                 description: Array of songs to search for
  *     responses:
  *       200:
  *         description: Successfully retrieved song links
@@ -42,11 +53,15 @@ const router = Router();
  *                   items:
  *                     type: object
  *                     properties:
- *                       name:
+ *                       title:
  *                         type: string
  *                         example: "Shape of You"
+ *                       artist:
+ *                         type: string
+ *                         example: "Ed Sheeran"
  *                       url:
  *                         type: string
+ *                         nullable: true
  *                         example: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3"
  *       400:
  *         description: Invalid request - songs array is empty or not provided

@@ -34,7 +34,19 @@ export const spotifyController = {
     },
     validateSongsInput(songs: unknown): void {
         if (!Array.isArray(songs) || songs.length === EMPTY_ARRAY_LENGTH) {
-            throw new Error('Invalid request. Please provide an array of song names.');
+            throw new Error('Invalid request. Please provide an array of songs.');
+        }
+
+        const isValidSong = (song: unknown): song is { title: string; artist: string } =>
+            typeof song === 'object'
+            && song !== null
+            && 'title' in song
+            && 'artist' in song
+            && typeof song.title === 'string'
+            && typeof song.artist === 'string';
+
+        if (!songs.every(isValidSong)) {
+            throw new Error('Invalid request. Each song must have a title and artist property.');
         }
     },
 }; 

@@ -5,6 +5,17 @@ const MILLISECONDS_PER_SECOND = 1000;
 const INITIAL_TOKEN_EXPIRATION = 0;
 const SEARCH_LIMIT = 1;
 
+interface SongSearch {
+    title: string;
+    artist: string;
+}
+
+interface SongResult {
+    title: string;
+    artist: string;
+    url: string | null;
+}
+
 class SpotifyService {
     private accessToken: string | null = null;
     private tokenExpirationTime: number = INITIAL_TOKEN_EXPIRATION;
@@ -36,11 +47,11 @@ class SpotifyService {
         }
     }
 
-    async searchSongs(songNames: string[]): Promise<Array<{ name: string, url: string | null }>> {
+    async searchSongs(songs: SongSearch[]): Promise<SongResult[]> {
         const accessToken = await this.getAccessToken();
 
         const results = await Promise.all(
-            songNames.map(async (songName) => {
+            songs.map(async ({ title, artist }) => {
                 try {
                     const response = await axios.get(`${spotifyConfig.baseUrl}/search`, {
                         headers: {
@@ -48,20 +59,22 @@ class SpotifyService {
                         },
                         params: {
                             limit: SEARCH_LIMIT,
-                            query: songName,
+                            query: `track:${title} artist:${artist}`,
                             type: 'track'
                         }
                     });
 
                     const [track] = response.data.tracks.items;
                     return {
-                        name: songName,
+                        artist,
+                        title,
                         url: track ? track.external_urls.spotify : null
                     };
                 } catch (error) {
-                    console.error(`Error searching for song "${songName}":`, error);
+                    console.error(`Error searching for song "${title}" by "${artist}":`, error);
                     return {
-                        name: songName,
+                        artist,
+                        title,
                         url: null
                     };
                 }
