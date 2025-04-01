@@ -63,6 +63,10 @@ const router = Router();
  *                         type: string
  *                         nullable: true
  *                         example: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3"
+ *                       uri:
+ *                         type: string
+ *                         nullable: true
+ *                         example: "spotify:track:7qiZfU4dY1lWllzX7mPBI3"
  *       400:
  *         description: Invalid request - songs array is empty or not provided
  *         content:

@@ -14,6 +14,7 @@ interface SongResult {
     title: string;
     artist: string;
     url: string | null;
+    uri: string | null;
 }
 
 class SpotifyService {
@@ -68,6 +69,7 @@ class SpotifyService {
                     return {
                         artist,
                         title,
+                        uri: track ? track.uri : null,
                         url: track ? track.external_urls.spotify : null
                     };
                 } catch (error) {
@@ -75,6 +77,7 @@ class SpotifyService {
                     return {
                         artist,
                         title,
+                        uri: null,
                         url: null
                     };
                 }
