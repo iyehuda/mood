@@ -5,6 +5,7 @@ import logging
 import uvicorn
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.routes import generate_router
 from app.utils.error_handlers import ErrorHandlingUtils
@@ -29,12 +30,26 @@ def create_application() -> FastAPI:
             openapi_url="/openapi.json"
         )
         
+        # Add CORS middleware
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=[
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:5174"
+            ],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+        
         # Register exception handlers
         for exception_cls, handler in ErrorHandlingUtils.get_exception_handlers().items():
             application.add_exception_handler(exception_cls, handler)
         
         # Include routers
-        application.include_router(generate_router, prefix="/generate")
+        application.include_router(generate_router)
         
         logger.info("FastAPI application created and configured successfully")
         return application

@@ -1,14 +1,11 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import "./App.css";
-import HelloWorldPage from "./pages/HelloWorldPage";
-import { darkTheme } from "./styles/theme";
+import { PlaylistGenerator } from './components/PlaylistGenerator';
+import './App.css';
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline enableColorScheme />
-      <HelloWorldPage />
-    </ThemeProvider>
+    <div className="app">
+      <PlaylistGenerator />
+    </div>
   );
 }
 
