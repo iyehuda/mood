@@ -6,13 +6,24 @@ class SongRecommendationRequest(BaseModel):
     Model for receiving song recommendation requests.
     
     Attributes:
-        message: The user's prompt text for generating song recommendations
+        mood: The user's mood or emotion to base song recommendations on
     """
-    message: str = Field(..., description="Text prompt for song recommendations")
+    mood: str = Field(
+        ..., 
+        description="The mood or emotion to base song recommendations on",
+        example="Party"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "mood": "Party"
+            }
+        }
 
 class Song(BaseModel):
     """
-    Model representing a simplified song recommendation with only title and artist.
+    Model representing a song recommendation.
     
     Attributes:
         title: The title of the song
@@ -20,6 +31,14 @@ class Song(BaseModel):
     """
     title: str = Field(..., description="Song title")
     artist: str = Field(..., description="Artist or band name")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "Don't Stop Me Now",
+                "artist": "Queen"
+            }
+        }
 
 
 class SongRecommendations(BaseModel):
@@ -29,4 +48,20 @@ class SongRecommendations(BaseModel):
     Attributes:
         songs: List of song recommendations with title and artist only
     """
-    songs: List[Song] = Field(..., description="List of song recommendations") 
+    songs: List[Song] = Field(..., description="List of song recommendations")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "songs": [
+                    {
+                        "title": "Don't Stop Me Now",
+                        "artist": "Queen"
+                    },
+                    {
+                        "title": "Uptown Funk",
+                        "artist": "Mark Ronson ft. Bruno Mars"
+                    }
+                ]
+            }
+        } 

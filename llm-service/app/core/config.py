@@ -1,6 +1,10 @@
 import os
 import logging
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Setup logging
 logging.basicConfig(
@@ -18,27 +22,30 @@ class Settings:
     API_VERSION: str = "1.0.0"
     
     # Google API key
-    GOOGLE_API_KEY: Optional[str] = os.getenv(
-        "GOOGLE_API_KEY", "AIzaSyAPIMJsGBguJK5xWbswr-G82-YMqJ2MtbI"
-    )
+    GOOGLE_API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
     
     # Model settings
-    MODEL_NAME: str = "gemini-2.5-pro-exp-03-25"
-    TEMPERATURE: float = 0.7
+    MODEL_NAME: str = os.getenv("MODEL_NAME", "gemini-2.0-flash")
+    TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
     
     # Server settings
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    HOST: str = os.getenv("HOST", "0.0.0.0")
+    PORT: int = int(os.getenv("PORT", "8000"))
     
     def __init__(self):
         """Initialize and validate settings."""
         try:
+            # Validate required environment variables
+            if not self.GOOGLE_API_KEY:
+                raise ValueError("GOOGLE_API_KEY environment variable is required")
+            
             # Set environment variable for Google API key
-            if self.GOOGLE_API_KEY:
-                os.environ["GOOGLE_API_KEY"] = self.GOOGLE_API_KEY
-                logger.info("Google API key configured")
-            else:
-                logger.warning("Google API key not found in environment variables")
+            os.environ["GOOGLE_API_KEY"] = self.GOOGLE_API_KEY
+            logger.info("Google API key configured")
+            
+            # Log other important settings
+            logger.info(f"Model: {self.MODEL_NAME}, Temperature: {self.TEMPERATURE}")
+            logger.info(f"Server: {self.HOST}:{self.PORT}")
         except Exception as e:
             logger.error(f"Error initializing settings: {e}")
             raise
