@@ -1,9 +1,9 @@
 import logging
-from typing import Any, Dict, List, Generator
+from typing import Any, Dict, List
 
 from langchain_core.output_parsers import JsonOutputParser
 
-from app.models.song import Song, SongRecommendations
+from app.models.song import Song, SongRecommendations, MoodPrompt
 from app.prompts.song_recommendations import SIMPLE_SONG_RECOMMENDATION_PROMPT
 from app.services.llm_service import LLMService
 
@@ -27,72 +27,52 @@ class RecommendationService:
             logger.error(f"Error initializing recommendation service: {e}")
             raise
 
-    async def get_song_recommendations(self, mood: str, song_count: int = 5) -> Dict[str, List[Dict[str, str]]]:
+    async def get_song_recommendations(self, mood_prompt: MoodPrompt) -> SongRecommendations:
         """
         Get song recommendations based on user mood.
         
         Args:
-            mood: The user's mood or emotion to base recommendations on
-            song_count: Number of songs to recommend (default: 5)
+            mood_prompt: The mood prompt containing mood and optional custom prompt
             
         Returns:
-            Dictionary containing a list of song recommendations, each with title and artist
+            SongRecommendations object containing list of song recommendations
             
         Example:
             {
                 "songs": [
-                    {"title": "Don't Stop Me Now", "artist": "Queen"},
-                    {"title": "Uptown Funk", "artist": "Mark Ronson ft. Bruno Mars"}
-                ]
+                    {"title": "Don't Stop Me Now", "artist": "Queen", "reason": "Upbeat and energetic"},
+                    {"title": "Uptown Funk", "artist": "Mark Ronson ft. Bruno Mars", "reason": "Fun and danceable"}
+                ],
+                "total": 2
             }
         """
         try:
-            logger.info(f"Getting song recommendations for mood: {mood}")
+            logger.info(f"Getting song recommendations for mood: {mood_prompt.mood}")
 
-            # Setup parser for JSON output without schema enforcement
+            # Setup parser for JSON output
             parser = JsonOutputParser()
 
             # Get recommendations
-            inputs = {"message": mood, "song_count": song_count}
-            response = self.llm_service.generate_response(
+            inputs = {
+                "message": mood_prompt.mood,
+                "song_count": mood_prompt.song_count
+            }
+            if mood_prompt.custom_prompt:
+                inputs["custom_prompt"] = mood_prompt.custom_prompt
+
+            response = await self.llm_service.generate_response(
                 prompt_template=SIMPLE_SONG_RECOMMENDATION_PROMPT,
                 inputs=inputs,
                 output_parser=parser
             )
-            return response
+
+            # Access the content attribute of the LLMResponse object
+            response_content = response.content
+            
+            # Convert response to SongRecommendations model
+            songs = [Song(**song) for song in response_content.get("songs", [])]
+            return SongRecommendations(songs=songs, total=len(songs))
+
         except Exception as e:
             logger.error(f"Error getting song recommendations: {e}")
-            return {"songs": []}
-
-    async def stream_song_recommendations(self, mood: str, song_count: int = 5) -> Generator[str, None, None]:
-        """
-        Stream song recommendations based on user mood.
-        
-        Args:
-            mood: The user's mood or emotion to base recommendations on
-            song_count: Number of songs to recommend (default: 5)
-            
-        Yields:
-            Chunks of recommendation data as strings
-            
-        Example:
-            Each chunk will be a JSON string like:
-            {"songs": [{"title": "Don't Stop Me Now", "artist": "Queen"}]}
-        """
-        try:
-            logger.info(f"Streaming song recommendations for mood: {mood}")
-
-            # Setup parser for JSON output without schema enforcement
-            parser = JsonOutputParser()
-
-            # Stream recommendations
-            inputs = {"message": mood, "song_count": song_count}
-            async for chunk in self.llm_service.stream_response(
-                    prompt_template=SIMPLE_SONG_RECOMMENDATION_PROMPT,
-                    inputs=inputs,
-                    output_parser=parser
-            ):
-                yield f"{chunk}\n"
-        except Exception as e:
-            logger.error(f"Error streaming song recommendations: {e}")
-            yield f"Error: {str(e)}\n"
+            return SongRecommendations(songs=[], total=0)

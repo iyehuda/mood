@@ -1,8 +1,8 @@
 import logging
 from fastapi import APIRouter, HTTPException, Depends, Body
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import JSONResponse
 
-from app.models.song import SongRecommendationRequest, SongRecommendations
+from app.models.song import SongRecommendationRequest, SongRecommendations, MoodPrompt
 from app.services.recommendation_service import RecommendationService
 
 logger = logging.getLogger(__name__)
@@ -31,18 +31,23 @@ def get_recommendation_service():
             "description": "Successfully generated song recommendations",
             "content": {
                 "application/json": {
-                    "example": {
-                        "songs": [
-                            {
-                                "title": "Don't Stop Me Now",
-                                "artist": "Queen"
-                            },
-                            {
-                                "title": "Uptown Funk",
-                                "artist": "Mark Ronson ft. Bruno Mars"
-                            }
-                        ]
-                    }
+                    "examples": [
+                        {
+                            "songs": [
+                                {
+                                    "title": "Don't Stop Me Now",
+                                    "artist": "Queen",
+                                    "reason": "Upbeat and energetic"
+                                },
+                                {
+                                    "title": "Uptown Funk",
+                                    "artist": "Mark Ronson ft. Bruno Mars",
+                                    "reason": "Fun and danceable"
+                                }
+                            ],
+                            "total": 2
+                        }
+                    ]
                 }
             }
         },
@@ -50,7 +55,7 @@ def get_recommendation_service():
     }
 )
 async def get_song_recommendations(
-    request: SongRecommendationRequest = Body(..., example={"mood": "Party"}),
+    request: SongRecommendationRequest = Body(..., examples=[{"mood": "Party"}, {"mood": "Happy"}]),
     recommendation_service: RecommendationService = Depends(get_recommendation_service)
 ):
     """
@@ -73,78 +78,35 @@ async def get_song_recommendations(
             "songs": [
                 {
                     "title": "Don't Stop Me Now",
-                    "artist": "Queen"
+                    "artist": "Queen",
+                    "reason": "Upbeat and energetic"
                 },
                 {
                     "title": "Uptown Funk",
-                    "artist": "Mark Ronson ft. Bruno Mars"
+                    "artist": "Mark Ronson ft. Bruno Mars",
+                    "reason": "Fun and danceable"
                 }
-            ]
+            ],
+            "total": 2
         }
     """
     try:
         logger.info(f"Received song recommendation request for mood: {request.mood}")
         
-        response = await recommendation_service.get_song_recommendations(request.mood)
-        return JSONResponse(content=response)
+        # Create a MoodPrompt object from the request
+        mood_prompt = MoodPrompt(
+            mood=request.mood,
+            custom_prompt=request.custom_prompt if hasattr(request, 'custom_prompt') else None,
+            song_count=request.song_count if hasattr(request, 'song_count') else 5
+        )
+        
+        # Call the async service method
+        response = await recommendation_service.get_song_recommendations(mood_prompt)
+        # Convert the Pydantic model to a dictionary before returning
+        return response.model_dump()
     except Exception as e:
         logger.exception(f"Error processing recommendation request: {e}")
         raise HTTPException(
             status_code=500, 
             detail=f"Error getting song recommendations: {str(e)}"
-        )
-
-@generate_router.post(
-    "/stream",
-    responses={
-        200: {
-            "description": "Successfully streaming song recommendations",
-            "content": {
-                "text/event-stream": {
-                    "example": '{"songs": [{"title": "Don\'t Stop Me Now", "artist": "Queen"}]}\n'
-                }
-            }
-        },
-        500: {"description": "Internal server error"}
-    }
-)
-async def stream_song_recommendations(
-    request: SongRecommendationRequest = Body(..., example={"mood": "Party"}),
-    recommendation_service: RecommendationService = Depends(get_recommendation_service)
-):
-    """
-    Stream song recommendations based on user mood.
-    
-    Args:
-        request: SongRecommendationRequest containing the user's mood
-        recommendation_service: Service for generating recommendations
-        
-    Returns:
-        StreamingResponse with song recommendations as Server-Sent Events
-        
-    Example Request:
-        {
-            "mood": "Party"
-        }
-        
-    Example Response:
-        Each event will be a JSON string like:
-        {"songs": [{"title": "Don't Stop Me Now", "artist": "Queen"}]}
-    """
-    try:
-        logger.info(f"Received streaming song recommendation request for mood: {request.mood}")
-        
-        async def generate_stream():
-            async for chunk in recommendation_service.stream_song_recommendations(request.mood):
-                yield chunk
-        
-        return StreamingResponse(
-            generate_stream(),
-            media_type="text/event-stream"
-        )
-    except Exception as e:
-        logger.exception(f"Error processing streaming recommendation request: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Error streaming song recommendations: {str(e)}"
         ) 
