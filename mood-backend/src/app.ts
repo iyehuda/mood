@@ -2,7 +2,8 @@ import { Environment, environment } from "./config";
 import bodyParser from "body-parser";
 import { errors } from "celebrate";
 import express from "express";
-import helloWorldRouter from "./routes/hello-world";
+import helloWorldRouter from "./routes/hello-world.routes";
+import spotifyRouter from "./routes/spotify.routes";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
@@ -21,18 +22,25 @@ const apiSpecs = swaggerJSDoc({
   },
 });
 
+// eslint-disable-next-line max-statements
 export function createApp() {
   const app = express();
 
   app.use(morgan(environment === Environment.PROD ? "combined" : "dev"));
   app.use(bodyParser.json());
-  app.use(cors());
+  app.use(cors({
+    origin: environment === Environment.PROD 
+      ? 'https://your-production-domain.com'  // Replace with your production domain
+      : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],  // Development frontend URLs
+    credentials: true,
+  }));
 
   if (environment !== Environment.PROD) {
     app.use("/docs", swaggerUI.serve, swaggerUI.setup(apiSpecs));
   }
 
   app.use("/hello", helloWorldRouter);
+  app.use("/spotify", spotifyRouter);
   app.use(errors());
   app.use(errorHandler({ includeStack: environment === Environment.DEV }));
 
