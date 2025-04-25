@@ -1,5 +1,3 @@
-import { fetcher } from './fetcher';
-
 const LLM_API_URL = import.meta.env.VITE_LLM_API_URL;
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
