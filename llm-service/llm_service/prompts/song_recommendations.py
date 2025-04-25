@@ -1,7 +1,7 @@
 """
 Prompt templates for song recommendation generation.
 """
-from app.models.prompt import SongRecommendationPrompt
+from llm_service.models.prompt import SongRecommendationPrompt
 
 # Simplified prompt for minimal recommendations
 SIMPLE_SONG_RECOMMENDATION_PROMPT = SongRecommendationPrompt(
@@ -25,4 +25,4 @@ Each song should have the following fields: "title", "artist", and "reason".
     },
     song_count=5,
     include_reason=True
-).template 
+).template

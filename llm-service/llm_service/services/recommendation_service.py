@@ -1,11 +1,9 @@
 import logging
-from typing import Any, Dict, List
-
 from langchain_core.output_parsers import JsonOutputParser
 
-from app.models.song import Song, SongRecommendations, MoodPrompt
-from app.prompts.song_recommendations import SIMPLE_SONG_RECOMMENDATION_PROMPT
-from app.services.llm_service import LLMService
+from llm_service.models.song import Song, SongRecommendations, MoodPrompt
+from llm_service.prompts.song_recommendations import SIMPLE_SONG_RECOMMENDATION_PROMPT
+from llm_service.services.llm_service import LLMService
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +66,7 @@ class RecommendationService:
 
             # Access the content attribute of the LLMResponse object
             response_content = response.content
-            
+
             # Convert response to SongRecommendations model
             songs = [Song(**song) for song in response_content.get("songs", [])]
             return SongRecommendations(songs=songs, total=len(songs))

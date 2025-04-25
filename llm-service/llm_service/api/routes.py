@@ -1,20 +1,18 @@
 import logging
 from fastapi import APIRouter, HTTPException, Depends, Body
-from fastapi.responses import JSONResponse
 
-from app.models.song import SongRecommendationRequest, SongRecommendations, MoodPrompt
-from app.services.recommendation_service import RecommendationService
+from llm_service.models.song import SongRecommendationRequest, SongRecommendations, MoodPrompt
+from llm_service.services.recommendation_service import RecommendationService
 
 logger = logging.getLogger(__name__)
 
-# Create API router
 generate_router = APIRouter(
     prefix="/generate",
     tags=["generate"],
     responses={404: {"description": "Not found"}},
 )
 
-# Dependency to get recommendation service
+
 def get_recommendation_service():
     """Dependency for injecting the RecommendationService."""
     try:
@@ -22,6 +20,7 @@ def get_recommendation_service():
     except Exception as e:
         logger.error(f"Error creating recommendation service: {e}")
         raise HTTPException(status_code=500, detail="Service initialization error")
+
 
 @generate_router.post(
     "/",
@@ -55,8 +54,8 @@ def get_recommendation_service():
     }
 )
 async def get_song_recommendations(
-    request: SongRecommendationRequest = Body(..., examples=[{"mood": "Party"}, {"mood": "Happy"}]),
-    recommendation_service: RecommendationService = Depends(get_recommendation_service)
+        request: SongRecommendationRequest = Body(..., examples=[{"mood": "Party"}, {"mood": "Happy"}]),
+        recommendation_service: RecommendationService = Depends(get_recommendation_service)
 ):
     """
     Get song recommendations based on user mood.
@@ -92,14 +91,14 @@ async def get_song_recommendations(
     """
     try:
         logger.info(f"Received song recommendation request for mood: {request.mood}")
-        
+
         # Create a MoodPrompt object from the request
         mood_prompt = MoodPrompt(
             mood=request.mood,
             custom_prompt=request.custom_prompt if hasattr(request, 'custom_prompt') else None,
             song_count=request.song_count if hasattr(request, 'song_count') else 5
         )
-        
+
         # Call the async service method
         response = await recommendation_service.get_song_recommendations(mood_prompt)
         # Convert the Pydantic model to a dictionary before returning
@@ -107,6 +106,6 @@ async def get_song_recommendations(
     except Exception as e:
         logger.exception(f"Error processing recommendation request: {e}")
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail=f"Error getting song recommendations: {str(e)}"
-        ) 
+        )

@@ -1,17 +1,18 @@
-import logging
 import traceback
-from typing import Dict, Any, Callable, Type, Optional
+from typing import Dict, Callable, Type, Optional
 
+import logging
 from fastapi import Request, status
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 
+
 class ErrorHandlingUtils:
     """Utility class for handling errors and exceptions."""
-    
+
     @staticmethod
     def handle_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
         """
@@ -33,7 +34,7 @@ class ErrorHandlingUtils:
                 "path": request.url.path
             }
         )
-    
+
     @staticmethod
     def handle_pydantic_validation_error(request: Request, exc: ValidationError) -> JSONResponse:
         """
@@ -55,7 +56,7 @@ class ErrorHandlingUtils:
                 "path": request.url.path
             }
         )
-    
+
     @staticmethod
     def handle_general_exception(request: Request, exc: Exception) -> JSONResponse:
         """
@@ -78,11 +79,11 @@ class ErrorHandlingUtils:
                 "path": request.url.path
             }
         )
-    
+
     @staticmethod
     def get_exception_handlers() -> Dict[Type[Exception], Callable]:
         """
-        Get exception handlers for FastAPI app.
+        Get exception handlers for FastAPI llm_service.
         
         Returns:
             Dictionary mapping exception types to handler functions
@@ -92,6 +93,7 @@ class ErrorHandlingUtils:
             ValidationError: ErrorHandlingUtils.handle_pydantic_validation_error,
             Exception: ErrorHandlingUtils.handle_general_exception
         }
+
 
 def log_error(error_message: str, error: Optional[Exception] = None, log_traceback: bool = True) -> None:
     """
@@ -107,4 +109,4 @@ def log_error(error_message: str, error: Optional[Exception] = None, log_traceba
         if log_traceback:
             logger.error(traceback.format_exc())
     else:
-        logger.error(error_message) 
+        logger.error(error_message)
