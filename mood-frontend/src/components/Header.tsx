@@ -11,13 +11,7 @@ interface HeaderProps {
 }
 
 const LogoutButton = styled(Button)(({ theme }) => ({
-  color: "#FFFFFF",
-  textTransform: "none",
-  borderRadius: "20px",
-  padding: theme.spacing(0.5, 2),
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-  },
+  color: theme.palette.text.primary,
 }));
 
 export const Header = ({ currentMood, customPrompt }: HeaderProps) => {

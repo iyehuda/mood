@@ -10,7 +10,6 @@ import {
 interface AuthContextType {
   isAuthenticated: boolean;
   accessToken: string | null;
-  login: () => void;
   logout: () => void;
   checkingAuth: boolean;
   user: User | null;
@@ -59,11 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setCheckingAuth(false);
   }, []);
 
-  const login = () => {
-    // The actual redirection happens in the LoginPage component
-    // This function is a placeholder for potential pre-login logic
-  };
-
   const logout = () => {
     clearToken();
     setAccessToken(null);
@@ -73,7 +67,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     isAuthenticated,
     accessToken,
-    login,
     logout,
     checkingAuth,
     user,
