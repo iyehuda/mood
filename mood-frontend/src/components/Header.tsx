@@ -1,4 +1,7 @@
 import "../styles/Header.css";
+import { Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { type Mood } from "../services/api";
 import { useAuth } from "../context/AuthContext.tsx";
 
@@ -7,8 +10,18 @@ interface HeaderProps {
   customPrompt: string;
 }
 
+const LogoutButton = styled(Button)(({ theme }) => ({
+  color: "#FFFFFF",
+  textTransform: "none",
+  borderRadius: "20px",
+  padding: theme.spacing(0.5, 2),
+  "&:hover": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
+}));
+
 export const Header = ({ currentMood, customPrompt }: HeaderProps) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const getTitleColor = () => {
     if (customPrompt) return "#ffffff";
@@ -48,16 +61,19 @@ export const Header = ({ currentMood, customPrompt }: HeaderProps) => {
         ></div>
       </div>
       {user && (
-        <div
-          className="spotify-user-info"
-          style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}
-        >
-          <span className="spotify-user-name" style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-            {user.name}
-          </span>
-          <span className="spotify-user-email" style={{ color: "#666", fontSize: "0.9rem" }}>
-            {user.email}
-          </span>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            className="spotify-user-info"
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}
+          >
+            <span className="spotify-user-name" style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+              {user.name}
+            </span>
+            <span className="spotify-user-email" style={{ color: "#666", fontSize: "0.9rem" }}>
+              {user.email}
+            </span>
+          </div>
+          <LogoutButton onClick={logout} startIcon={<LogoutIcon />} />
         </div>
       )}
     </header>
