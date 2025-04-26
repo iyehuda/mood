@@ -1,67 +1,55 @@
-import { useState } from 'react';
-import { api, type Mood } from '../services/api';
-import { MoodSelector } from './MoodSelector';
-import { ProgressBar } from './ProgressBar';
-import { Header } from './Header';
-import '../styles/PlaylistGenerator.css';
+import { useState } from "react";
+import { api, type Mood, Song } from "../services/api";
+import { MoodSelector } from "./MoodSelector";
+import { ProgressBar } from "./ProgressBar";
+import { Header } from "./Header";
+import "../styles/PlaylistGenerator.css";
 
-interface Song {
-  artist: string;
-  title: string;
-  uri: string | null;
-  url: string | null;
-}
-
-type Step = 'idle' | 'generating' | 'fetching' | 'complete';
+type Step = "idle" | "generating" | "fetching" | "complete";
 
 export const PlaylistGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentMood, setCurrentMood] = useState<Mood | null>(null);
-  const [currentStep, setCurrentStep] = useState<Step>('idle');
-  const [customPrompt, setCustomPrompt] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<Step>("idle");
+  const [customPrompt, setCustomPrompt] = useState<string>("");
 
-  const stepLabels = ['Generating Songs', 'Fetching from Spotify'];
+  const stepLabels = ["Generating Songs", "Fetching from Spotify"];
   const getCurrentStepNumber = () => {
     switch (currentStep) {
-      case 'idle':
+      case "idle":
         return 0;
-      case 'generating':
+      case "generating":
         return 1;
-      case 'fetching':
+      case "fetching":
         return 2;
-      case 'complete':
+      case "complete":
         return 2;
       default:
         return 0;
     }
   };
 
-  const handleSpotifyLogin = () => {
-    // TODO: Implement Spotify login
-    console.log('Spotify login clicked');
-  };
-
   const generatePlaylist = async (mood: Mood) => {
     try {
       setIsLoading(true);
       setError(null);
-      setCurrentStep('generating');
+      setCurrentStep("generating");
 
       // Get song recommendations from LLM service
       const recommendations = await api.getSongRecommendations(mood);
-      
-      setCurrentStep('fetching');
+
+      setCurrentStep("fetching");
       // Generate playlist using backend service
       const response = await api.generatePlaylist(recommendations);
-      
+
       setSongs(response.data || []);
-      setCurrentStep('complete');
+      setCurrentStep("complete");
     } catch (err) {
-      setError('Failed to generate playlist. Please try again.');
-      console.error('Error generating playlist:', err);
-      setCurrentStep('idle');
+      setError("Failed to generate playlist. Please try again.");
+      console.error("Error generating playlist:", err);
+      setCurrentStep("idle");
     } finally {
       setIsLoading(false);
     }
@@ -69,8 +57,8 @@ export const PlaylistGenerator = () => {
 
   const handleMoodSelect = (mood: Mood) => {
     setCurrentMood(mood);
-    setCustomPrompt('');
-    setCurrentStep('idle');
+    setCustomPrompt("");
+    setCurrentStep("idle");
     generatePlaylist(mood);
   };
 
@@ -78,22 +66,22 @@ export const PlaylistGenerator = () => {
     try {
       setIsLoading(true);
       setError(null);
-      setCurrentStep('generating');
+      setCurrentStep("generating");
       setCustomPrompt(prompt);
 
       // Get song recommendations from LLM service with custom prompt
-      const recommendations = await api.getSongRecommendations('happy', prompt);
-      
-      setCurrentStep('fetching');
+      const recommendations = await api.getSongRecommendations(prompt);
+
+      setCurrentStep("fetching");
       // Generate playlist using backend service
       const response = await api.generatePlaylist(recommendations);
-      
+
       setSongs(response.data || []);
-      setCurrentStep('complete');
+      setCurrentStep("complete");
     } catch (err) {
-      setError('Failed to generate playlist. Please try again.');
-      console.error('Error generating playlist:', err);
-      setCurrentStep('idle');
+      setError("Failed to generate playlist. Please try again.");
+      console.error("Error generating playlist:", err);
+      setCurrentStep("idle");
     } finally {
       setIsLoading(false);
     }
@@ -101,18 +89,14 @@ export const PlaylistGenerator = () => {
 
   return (
     <div className="playlist-generator">
-      <Header 
-        onSpotifyLogin={handleSpotifyLogin} 
-        currentMood={currentMood}
-        customPrompt={customPrompt}
-      />
+      <Header currentMood={currentMood} customPrompt={customPrompt} />
       <div className="content">
-        <MoodSelector 
-          onMoodSelect={handleMoodSelect} 
+        <MoodSelector
+          onMoodSelect={handleMoodSelect}
           onCustomPrompt={handleCustomPrompt}
-          isLoading={isLoading} 
+          isLoading={isLoading}
         />
-        
+
         {isLoading && (
           <ProgressBar
             currentStep={getCurrentStepNumber()}
@@ -120,24 +104,24 @@ export const PlaylistGenerator = () => {
             stepLabels={stepLabels}
           />
         )}
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         {songs.length > 0 && (
           <div className="songs-container">
             <h2>Recommended Songs</h2>
             <div className="songs-grid">
               {songs
-                .filter(song => song.url !== null)
+                .filter((song) => song.url !== null)
                 .map((song, index) => (
                   <div key={index} className="song-card">
                     <div className="song-info">
                       <h3>{song.title}</h3>
                       <p>{song.artist}</p>
                     </div>
-                    <a 
-                      href={song.url!} 
-                      target="_blank" 
+                    <a
+                      href={song.url!}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="spotify-link"
                     >
@@ -149,16 +133,18 @@ export const PlaylistGenerator = () => {
             <button
               className="regenerate-button"
               onClick={() => {
-                setCurrentStep('idle');
-                currentMood && generatePlaylist(currentMood);
+                setCurrentStep("idle");
+                if (currentMood) {
+                  generatePlaylist(currentMood);
+                }
               }}
               disabled={isLoading || !currentMood}
             >
-              {isLoading ? 'Generating...' : 'Regenerate Playlist'}
+              {isLoading ? "Generating..." : "Regenerate Playlist"}
             </button>
           </div>
         )}
       </div>
     </div>
   );
-}; 
+};

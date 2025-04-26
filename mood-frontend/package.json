@@ -18,6 +18,7 @@
     "axios": "^1.7.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.5.2",
     "swr": "^2.3.2"
   },
   "devDependencies": {
