@@ -1,13 +1,13 @@
 import Card from "@mui/material/Card";
 import HelloWorldGreeting from "../components/HelloWorldGreeting";
 import HelloWorldVersion from "../components/HelloWorldVersion";
-import Logo from "../components/Logo";
+import MoodLogo from "../components/logos/MoodLogo.tsx";
 import { CardActions, CardContent, CardHeader, Divider } from "@mui/material";
 
 function HelloWorldPage() {
   return (
     <div>
-      <Logo />
+      <MoodLogo />
       <Card variant="outlined" sx={{ p: 1 }}>
         <CardHeader title="Welcome to Mood!" />
         <Divider />

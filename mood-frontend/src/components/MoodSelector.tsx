@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import type { Mood } from '../services/api';
-import '../styles/MoodSelector.css';
+import { useState } from "react";
+import type { Mood } from "../services/api";
+import "../styles/MoodSelector.css";
+import { ActionButton } from "./buttons/ActionButton.tsx";
+import { MoodButton } from "./buttons/MoodButton.tsx";
 
 interface MoodSelectorProps {
   onMoodSelect: (mood: Mood) => void;
@@ -9,22 +11,24 @@ interface MoodSelectorProps {
 }
 
 const moods: { type: Mood; label: string; color: string }[] = [
-  { type: 'happy', label: 'Happy', color: '#FFD700' },
-  { type: 'sad', label: 'Sad', color: '#4682B4' },
-  { type: 'energetic', label: 'Energetic', color: '#FF4500' },
-  { type: 'calm', label: 'Calm', color: '#98FB98' },
-  { type: 'romantic', label: 'Romantic', color: '#FF69B4' },
-  { type: 'angry', label: 'Angry', color: '#DC143C' },
-  { type: 'focused', label: 'Focused', color: '#9370DB' },
-  { type: 'party', label: 'Party', color: '#FF8C00' },
+  { type: "happy", label: "Happy", color: "#FFD700" },
+  { type: "sad", label: "Sad", color: "#4682B4" },
+  { type: "energetic", label: "Energetic", color: "#FF4500" },
+  { type: "calm", label: "Calm", color: "#98FB98" },
+  { type: "romantic", label: "Romantic", color: "#FF69B4" },
+  { type: "angry", label: "Angry", color: "#DC143C" },
+  { type: "focused", label: "Focused", color: "#9370DB" },
+  { type: "party", label: "Party", color: "#FF8C00" },
 ];
 
-export const MoodSelector = ({ onMoodSelect, onCustomPrompt, isLoading = false }: MoodSelectorProps) => {
-  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
-  const [customPrompt, setCustomPrompt] = useState('');
+export const MoodSelector = ({
+  onMoodSelect,
+  onCustomPrompt,
+  isLoading = false,
+}: MoodSelectorProps) => {
+  const [customPrompt, setCustomPrompt] = useState("");
 
   const handleMoodClick = (mood: Mood) => {
-    setSelectedMood(mood);
     onMoodSelect(mood);
   };
 
@@ -32,7 +36,7 @@ export const MoodSelector = ({ onMoodSelect, onCustomPrompt, isLoading = false }
     e.preventDefault();
     if (customPrompt.trim()) {
       onCustomPrompt(customPrompt.trim());
-      setCustomPrompt('');
+      setCustomPrompt("");
     }
   };
 
@@ -40,20 +44,17 @@ export const MoodSelector = ({ onMoodSelect, onCustomPrompt, isLoading = false }
     <div className="mood-selector-container">
       <div className="mood-buttons-row">
         {moods.map((mood) => (
-          <button
+          <MoodButton
             key={mood.type}
-            className={`mood-button ${selectedMood === mood.type ? 'selected' : ''} ${
-              isLoading ? 'disabled' : ''
-            }`}
-            style={{ backgroundColor: mood.color }}
+            sx={{ backgroundColor: mood.color }}
             onClick={() => handleMoodClick(mood.type)}
             disabled={isLoading}
           >
             {mood.label}
-          </button>
+          </MoodButton>
         ))}
       </div>
-      
+
       <form onSubmit={handleCustomPromptSubmit} className="custom-prompt-form">
         <input
           type="text"
@@ -63,14 +64,10 @@ export const MoodSelector = ({ onMoodSelect, onCustomPrompt, isLoading = false }
           className="custom-prompt-input"
           disabled={isLoading}
         />
-        <button 
-          type="submit" 
-          className="custom-prompt-button"
-          disabled={isLoading || !customPrompt.trim()}
-        >
+        <ActionButton type="submit" disabled={isLoading || !customPrompt.trim()}>
           Generate
-        </button>
+        </ActionButton>
       </form>
     </div>
   );
-}; 
+};

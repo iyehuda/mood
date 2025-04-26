@@ -4,6 +4,10 @@ import { MoodSelector } from "./MoodSelector";
 import { ProgressBar } from "./ProgressBar";
 import { Header } from "./Header";
 import "../styles/PlaylistGenerator.css";
+import { LinkButton } from "./buttons/LinkButton.tsx";
+import { ActionButton } from "./buttons/ActionButton.tsx";
+import { Box } from "@mui/material";
+import Typography from "@mui/material/Typography";
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 
@@ -106,10 +110,9 @@ export const PlaylistGenerator = () => {
         )}
 
         {error && <div className="error-message">{error}</div>}
-
         {songs.length > 0 && (
-          <div className="songs-container">
-            <h2>Recommended Songs</h2>
+          <Box textAlign="center" mt={2}>
+            <Typography variant="h4" my={2} >Recommended Songs</Typography>
             <div className="songs-grid">
               {songs
                 .filter((song) => song.url !== null)
@@ -119,19 +122,11 @@ export const PlaylistGenerator = () => {
                       <h3>{song.title}</h3>
                       <p>{song.artist}</p>
                     </div>
-                    <a
-                      href={song.url!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="spotify-link"
-                    >
-                      Listen on Spotify
-                    </a>
+                    <LinkButton href={song.url!}>Listen on Spotify</LinkButton>
                   </div>
                 ))}
             </div>
-            <button
-              className="regenerate-button"
+            <ActionButton
               onClick={() => {
                 setCurrentStep("idle");
                 if (currentMood) {
@@ -141,8 +136,8 @@ export const PlaylistGenerator = () => {
               disabled={isLoading || !currentMood}
             >
               {isLoading ? "Generating..." : "Regenerate Playlist"}
-            </button>
-          </div>
+            </ActionButton>
+          </Box>
         )}
       </div>
     </div>
