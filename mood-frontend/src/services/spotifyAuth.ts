@@ -2,6 +2,8 @@
 
 // Spotify OAuth configuration
 // These values would typically come from environment variables in a real app
+import axios from "axios";
+
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string;
 const REDIRECT_URI = `${window.location.origin}/callback`;
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
@@ -14,6 +16,11 @@ const SCOPES = [
   "playlist-modify-private",
 ];
 
+export interface User {
+  name: string;
+  email: string;
+}
+
 /**
  * Generate a Spotify authorization URL
  */
@@ -23,7 +30,28 @@ export const getAuthUrl = (): string => {
 };
 
 /**
- * Extract access token from URL hash fragment after Spotify auth redirect
+ * Fetch user profile from Spotify API
+ */
+export const getUserProfile = async (token: string): Promise<User> => {
+  try {
+    const response = await axios.get("https://api.spotify.com/v1/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return {
+      name: response.data.display_name,
+      email: response.data.email,
+    };
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+};
+
+/**
+ * Extract access token from the URL hash fragment after Spotify auth redirect
  */
 export const getTokenFromUrl = (): { accessToken: string; expiresIn: number } | null => {
   if (!window.location.hash) {

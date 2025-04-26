@@ -19,13 +19,16 @@ interface SongRecommendation {
   artist: string;
 }
 
-interface PlaylistResponse {
-  playlistUrl: string;
-  songs: Array<{
-    title: string;
-    artist: string;
-    spotifyUrl: string;
-  }>;
+export interface Song {
+  artist: string;
+  title: string;
+  uri: string | null;
+  url: string | null;
+}
+
+interface SearchResponse {
+  success: boolean;
+  data: Song[];
 }
 
 const apiClient = axios.create({
@@ -50,7 +53,7 @@ apiClient.interceptors.request.use(
 
 export const api = {
   // Get song recommendations from LLM service based on mood
-  getSongRecommendations: async (mood: Mood): Promise<SongRecommendation[]> => {
+  getSongRecommendations: async (mood: string): Promise<SongRecommendation[]> => {
     const response = await fetch(`${LLM_API_URL}/generate`, {
       method: "POST",
       headers: {
@@ -73,12 +76,9 @@ export const api = {
   },
 
   // Generate or regenerate playlist using backend service
-  generatePlaylist: async (songs: SongRecommendation[]): Promise<PlaylistResponse> => {
+  generatePlaylist: async (songs: SongRecommendation[]): Promise<SearchResponse> => {
     const response = await apiClient.post("/spotify/search-songs", {
-      songs: songs.map((song) => ({
-        title: song.title,
-        artist: song.artist,
-      })),
+      songs,
     });
 
     if (!response.data) {
