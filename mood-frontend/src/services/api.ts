@@ -1,7 +1,18 @@
+import axios from "axios";
+import { getStoredToken } from "./spotifyAuth";
+
 const LLM_API_URL = import.meta.env.VITE_LLM_API_URL;
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
-export type Mood = 'happy' | 'sad' | 'energetic' | 'calm' | 'romantic' | 'angry' | 'focused' | 'party';
+export type Mood =
+  | "happy"
+  | "sad"
+  | "energetic"
+  | "calm"
+  | "romantic"
+  | "angry"
+  | "focused"
+  | "party";
 
 interface SongRecommendation {
   title: string;
@@ -17,24 +28,44 @@ interface PlaylistResponse {
   }>;
 }
 
+const apiClient = axios.create({
+  baseURL: BACKEND_API_URL,
+});
+
+apiClient.interceptors.request.use(
+  (config) => {
+    // Get the Spotify token from storage
+    const token = getStoredToken();
+
+    if (token) {
+      config.headers["X-Spotify-Token"] = token;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 export const api = {
   // Get song recommendations from LLM service based on mood
   getSongRecommendations: async (mood: Mood): Promise<SongRecommendation[]> => {
     const response = await fetch(`${LLM_API_URL}/generate`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         mood: mood,
-        num_songs: 5  // Request 5 songs for the playlist
+        num_songs: 5, // Request 5 songs for the playlist
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('LLM service error:', errorText);
-      throw new Error('Failed to get song recommendations');
+      console.error("LLM service error:", errorText);
+      throw new Error("Failed to get song recommendations");
     }
 
     const data = await response.json();
@@ -43,25 +74,18 @@ export const api = {
 
   // Generate or regenerate playlist using backend service
   generatePlaylist: async (songs: SongRecommendation[]): Promise<PlaylistResponse> => {
-    const response = await fetch(`${BACKEND_API_URL}/spotify/search-songs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        songs: songs.map(song => ({
-          title: song.title,
-          artist: song.artist
-        }))
-      }),
+    const response = await apiClient.post("/spotify/search-songs", {
+      songs: songs.map((song) => ({
+        title: song.title,
+        artist: song.artist,
+      })),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Backend service error:', errorText);
-      throw new Error('Failed to generate playlist');
+    if (!response.data) {
+      console.error("Backend service error:", response);
+      throw new Error("Failed to generate playlist");
     }
 
-    return response.json();
+    return response.data;
   },
-}; 
+};
