@@ -9,7 +9,6 @@ import { useAuth } from "./context/useAuth.tsx";
 function App() {
   const { isAuthenticated, checkingAuth } = useAuth();
 
-  // Show loading state while checking authentication
   if (checkingAuth) {
     return (
       <Box
