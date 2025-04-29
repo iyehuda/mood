@@ -4,16 +4,6 @@ import { getStoredToken } from "./spotifyAuth";
 const LLM_API_URL = import.meta.env.VITE_LLM_API_URL;
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
-export type Mood =
-  | "happy"
-  | "sad"
-  | "energetic"
-  | "calm"
-  | "romantic"
-  | "angry"
-  | "focused"
-  | "party";
-
 interface SongRecommendation {
   title: string;
   artist: string;

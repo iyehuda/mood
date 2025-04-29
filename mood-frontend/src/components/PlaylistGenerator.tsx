@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api, type Mood, Song } from "../services/api";
+import { api, Song } from "../services/api";
 import { MoodSelector } from "./MoodSelector";
 import { ProgressBar } from "./ProgressBar";
 import { Toolbar } from "./Toolbar.tsx";
@@ -8,6 +8,7 @@ import { LinkButton } from "./buttons/LinkButton.tsx";
 import { ActionButton } from "./buttons/ActionButton.tsx";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import { Mood } from "./moods.ts";
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 
@@ -112,7 +113,9 @@ export const PlaylistGenerator = () => {
         {error && <div className="error-message">{error}</div>}
         {songs.length > 0 && (
           <Box textAlign="center" mt={2}>
-            <Typography variant="h4" my={2} >Recommended Songs</Typography>
+            <Typography variant="h4" my={2}>
+              Recommended Songs
+            </Typography>
             <div className="songs-grid">
               {songs
                 .filter((song) => song.url !== null)

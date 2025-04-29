@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-d
 import { PlaylistGenerator } from "./components/PlaylistGenerator";
 import { LoginPage } from "./pages/LoginPage";
 import { CallbackPage } from "./pages/CallbackPage";
-import { useAuth } from "./context/AuthContext";
 import { Box, CircularProgress } from "@mui/material";
 import "./App.css";
+import { useAuth } from "./context/useAuth.tsx";
 
 function App() {
   const { isAuthenticated, checkingAuth } = useAuth();

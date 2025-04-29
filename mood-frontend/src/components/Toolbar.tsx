@@ -1,7 +1,7 @@
-import { type Mood } from "../services/api";
 import { UserDetails } from "./UserDetails.tsx";
 import MoodLogo from "./logos/MoodLogo.tsx";
 import { styled } from "@mui/material/styles";
+import { getMoodColor, Mood } from "./moods.ts";
 
 interface ToolbarProps {
   currentMood: Mood | null;
@@ -35,25 +35,8 @@ const StyledTitleUnderline = styled("div")({
   borderRadius: "2px",
 });
 
-function getTitleColor(mood: string) {
-  const defaultColor = "#ffffff";
-
-  const moodColors: Record<string, string> = {
-    happy: "#FFD700",
-    sad: "#4682B4",
-    angry: "#FF4500",
-    energetic: "#FF69B4",
-    calm: "#98FB98",
-    romantic: "#FF69B4",
-    focused: "#87CEEB",
-    party: "#FF1493",
-  };
-
-  return moodColors[mood] || defaultColor;
-}
-
 export const Toolbar = ({ currentMood, customPrompt }: ToolbarProps) => {
-  const moodColor = getTitleColor(currentMood || customPrompt);
+  const moodColor = getMoodColor((customPrompt as Mood) || currentMood);
 
   const title = customPrompt || currentMood;
 

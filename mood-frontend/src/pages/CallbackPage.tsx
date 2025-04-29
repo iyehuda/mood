@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
+
+import { useAuth } from "../context/useAuth.tsx";
 
 export const CallbackPage: React.FC = () => {
   const { isAuthenticated } = useAuth();

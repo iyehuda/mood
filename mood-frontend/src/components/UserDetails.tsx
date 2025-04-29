@@ -1,7 +1,8 @@
 import { Box, IconButton } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useAuth } from "../context/AuthContext.tsx";
+
+import { useAuth } from "../context/useAuth.tsx";
 
 export function UserDetails() {
   const { user, logout } = useAuth();

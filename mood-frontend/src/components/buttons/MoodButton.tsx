@@ -5,7 +5,7 @@ export const MoodButton = styled(Button)(({ theme }) => ({
   color: theme.palette.text.primary,
   padding: theme.spacing(1, 3),
   borderRadius: "24px",
-  textTransform: "none",
+  textTransform: "capitalize",
   fontSize: "0.8rem",
   size: "small",
   fontWeight: "500",

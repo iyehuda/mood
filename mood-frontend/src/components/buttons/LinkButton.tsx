@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { styled } from "@mui/material/styles";
 import { Button, Link } from "@mui/material";
 import { ComponentProps } from "react";

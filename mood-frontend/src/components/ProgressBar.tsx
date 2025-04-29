@@ -1,4 +1,4 @@
-import '../styles/ProgressBar.css';
+import "../styles/ProgressBar.css";
 
 interface ProgressBarProps {
   currentStep: number;
@@ -10,17 +10,14 @@ export const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBar
   return (
     <div className="progress-container">
       <div className="progress-bar">
-        <div 
-          className="progress-fill"
-          style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-        />
+        <div className="progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
       </div>
       <div className="progress-steps">
         {stepLabels.map((label, index) => (
-          <div 
+          <div
             key={index}
-            className={`progress-step ${index < currentStep ? 'completed' : ''} ${
-              index === currentStep ? 'current' : ''
+            className={`progress-step ${index < currentStep ? "completed" : ""} ${
+              index === currentStep ? "current" : ""
             }`}
           >
             <div className="step-number">{index + 1}</div>
@@ -30,4 +27,4 @@ export const ProgressBar = ({ currentStep, totalSteps, stepLabels }: ProgressBar
       </div>
     </div>
   );
-}; 
+};
