@@ -12,10 +12,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   maxWidth: "500px",
-  margin: "0 auto",
-  marginTop: theme.spacing(8),
+  marginTop: theme.spacing(4),
   borderRadius: "16px",
-  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
 }));
 
 export const LoginPage: React.FC = () => {
@@ -28,23 +26,21 @@ export const LoginPage: React.FC = () => {
       maxWidth="sm"
       style={{
         alignItems: "center",
-        justifyContent: "center",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <MoodLogo />
       <StyledPaper>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Welcome to Mood
+        <MoodLogo />
+        <Typography variant="h6" align="center" gutterBottom my={3}>
+          Generate playlists based on your mood and preferences
         </Typography>
-        <Typography variant="body1" align="center">
-          Generate playlists based on your mood and preferences. Connect with your Spotify account
-          to get started.
-        </Typography>
-        <ActionButton onClick={handleSpotifyLogin} sx={{ mt: 3 }}>
+        <ActionButton onClick={handleSpotifyLogin}>
           Connect with Spotify <SpotifyLogo />
         </ActionButton>
+        <Typography variant="subtitle2" color="textSecondary" mt={2}>
+          Connect with your Spotify account to get started
+        </Typography>
       </StyledPaper>
     </Container>
   );
