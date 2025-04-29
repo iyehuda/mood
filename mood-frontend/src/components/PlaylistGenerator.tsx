@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api, type Mood, Song } from "../services/api";
 import { MoodSelector } from "./MoodSelector";
 import { ProgressBar } from "./ProgressBar";
-import { Header } from "./Header";
+import { Toolbar } from "./Toolbar.tsx";
 import "../styles/PlaylistGenerator.css";
 import { LinkButton } from "./buttons/LinkButton.tsx";
 import { ActionButton } from "./buttons/ActionButton.tsx";
@@ -93,7 +93,7 @@ export const PlaylistGenerator = () => {
 
   return (
     <div className="playlist-generator">
-      <Header currentMood={currentMood} customPrompt={customPrompt} />
+      <Toolbar currentMood={currentMood} customPrompt={customPrompt} />
       <div className="content">
         <MoodSelector
           onMoodSelect={handleMoodSelect}
