@@ -7,12 +7,10 @@ export const CallbackPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // After token has been processed by AuthContext, redirect to main app
     if (isAuthenticated) {
-      // Small delay to ensure everything is properly initialized
       const timer = setTimeout(() => {
         window.location.href = "/";
-      }, 1000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -29,7 +27,7 @@ export const CallbackPage: React.FC = () => {
       }}
     >
       <CircularProgress size={50} />
-      <Typography variant="h6" sx={{ mt: 2 }}>
+      <Typography variant="h6" mt={2} color="textPrimary">
         Logging you in...
       </Typography>
     </Box>
