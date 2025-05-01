@@ -1,5 +1,5 @@
 import axios from "axios";
-import { spotifyConfig } from "../config/spotify.config";
+import { spotifyConfig } from "../config";
 
 const MILLISECONDS_PER_SECOND = 1000;
 const INITIAL_TOKEN_EXPIRATION = 0;

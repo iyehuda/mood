@@ -29,10 +29,11 @@ export function createApp() {
   app.use(morgan(environment === Environment.PROD ? "combined" : "dev"));
   app.use(bodyParser.json());
   app.use(cors({
-    origin: environment === Environment.PROD 
-      ? 'https://your-production-domain.com'  // Replace with your production domain
-      : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],  // Development frontend URLs
     credentials: true,
+    origin: environment === Environment.PROD 
+      ? 'https://your-production-domain.com'
+      // Development frontend URLs
+      : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'], 
   }));
 
   if (environment !== Environment.PROD) {
