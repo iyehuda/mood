@@ -11,7 +11,7 @@
 }
 
 .error-message {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   padding: 1rem;
   background-color: rgba(255, 71, 87, 0.2);
   border: 1px solid #ff4757;
@@ -92,9 +92,15 @@
   text-align: center;
 }
 
+.playlist-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
 .regenerate-button {
-  display: block;
-  margin: 2rem auto 0;
   padding: 0.75rem 1.5rem;
   background-color: #ff4757;
   color: white;
@@ -116,4 +122,21 @@
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+.playlist-success {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #1DB954;
+  font-weight: 500;
+}
+
+.playlist-success a {
+  color: #1ed760;
+  text-decoration: underline;
+  margin-left: 0.5rem;
+}
+
+.playlist-success a:hover {
+  color: #25ff70;
 } 
