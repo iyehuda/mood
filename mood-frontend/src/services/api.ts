@@ -1,8 +1,8 @@
 import axios from "axios";
 import { getStoredToken } from "./spotifyAuth";
 
-const LLM_API_URL = import.meta.env.VITE_LLM_API_URL;
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || "llm";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "backend";
 
 interface SongRecommendation {
   title: string;
