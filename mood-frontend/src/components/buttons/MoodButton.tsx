@@ -9,5 +9,5 @@ export const MoodButton = styled(Button)(({ theme }) => ({
   fontSize: "0.8rem",
   size: "small",
   fontWeight: "500",
-  minWidth: "100px",
+  minWidth: "110px",
 }));

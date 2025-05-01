@@ -3,6 +3,7 @@ import "../styles/MoodSelector.css";
 import { ActionButton } from "./buttons/ActionButton.tsx";
 import { MoodButton } from "./buttons/MoodButton.tsx";
 import { Mood, moodColors } from "./moods.ts";
+import Grid from "@mui/material/Grid2";
 
 interface MoodSelectorProps {
   onMoodSelect: (mood: Mood) => void;
@@ -45,17 +46,27 @@ export const MoodSelector = ({
       </div>
 
       <form onSubmit={handleCustomPromptSubmit} className="custom-prompt-form">
-        <input
-          type="text"
-          value={customPrompt}
-          onChange={(e) => setCustomPrompt(e.target.value)}
-          placeholder="Or describe your mood in your own words..."
-          className="custom-prompt-input"
-          disabled={isLoading}
-        />
-        <ActionButton type="submit" disabled={isLoading || !customPrompt.trim()}>
-          Generate
-        </ActionButton>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 10 }}>
+            <input
+              type="text"
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              placeholder="Or describe your mood in your own words..."
+              className="custom-prompt-input"
+              disabled={isLoading}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 2 }}>
+            <ActionButton
+              type="submit"
+              disabled={isLoading || !customPrompt.trim()}
+              sx={{ width: "100%" }}
+            >
+              Generate
+            </ActionButton>
+          </Grid>
+        </Grid>
       </form>
     </div>
   );

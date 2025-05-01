@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
-import { PlaylistGenerator } from "./components/PlaylistGenerator";
+import { GeneratePlaylistPage } from "./pages/GeneratePlaylistPage.tsx";
 import { LoginPage } from "./pages/LoginPage";
 import { CallbackPage } from "./pages/CallbackPage";
 import { Box, CircularProgress } from "@mui/material";
@@ -25,7 +25,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={isAuthenticated ? <PlaylistGenerator /> : <Navigate to="/login" />}
+            element={isAuthenticated ? <GeneratePlaylistPage /> : <Navigate to="/login" />}
           />
           <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
           <Route path="/callback" element={<CallbackPage />} />
