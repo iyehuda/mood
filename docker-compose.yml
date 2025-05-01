@@ -1,0 +1,73 @@
+services:
+  traefik:
+    image: traefik:v3.3.6
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mood-network
+
+  llm-service:
+    build:
+      context: ./llm-service
+      dockerfile: Dockerfile
+    container_name: llm-service
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    networks:
+      - mood-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.llm.rule=PathPrefix(`/llm`)"
+      - "traefik.http.routers.llm.entrypoints=web"
+      - "traefik.http.middlewares.llm-strip.stripprefix.prefixes=/llm"
+      - "traefik.http.routers.llm.middlewares=llm-strip"
+
+  mood-backend:
+    build:
+      context: ./mood-backend
+      dockerfile: Dockerfile
+    container_name: mood-backend
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+    networks:
+      - mood-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/backend`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/backend"
+      - "traefik.http.routers.backend.middlewares=backend-strip"
+
+
+  mood-frontend:
+    build:
+      context: ./mood-frontend
+      dockerfile: Dockerfile
+    container_name: mood-frontend
+    restart: unless-stopped
+    depends_on:
+      - llm-service
+      - mood-backend
+    networks:
+      - mood-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+
+networks:
+  mood-network:
+    driver: bridge

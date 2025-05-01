@@ -23,7 +23,7 @@ def get_recommendation_service():
 
 
 @generate_router.post(
-    "/",
+    "",
     response_model=SongRecommendations,
     responses={
         200: {
