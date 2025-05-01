@@ -1,13 +1,18 @@
 import { useState } from "react";
-import { api, type Mood, Song } from "../services/api";
-import { MoodSelector } from "./MoodSelector";
-import { ProgressBar } from "./ProgressBar";
-import { Header } from "./Header";
+import { api, Song } from "../services/api.ts";
+import { MoodSelector } from "../components/MoodSelector.tsx";
+import { ProgressBar } from "../components/ProgressBar.tsx";
+import { Toolbar } from "../components/Toolbar.tsx";
 import "../styles/PlaylistGenerator.css";
+import { LinkButton } from "../components/buttons/LinkButton.tsx";
+import { ActionButton } from "../components/buttons/ActionButton.tsx";
+import { Box } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import { Mood } from "../components/moods.ts";
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 
-export const PlaylistGenerator = () => {
+export const GeneratePlaylistPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -31,19 +36,16 @@ export const PlaylistGenerator = () => {
     }
   };
 
-  const generatePlaylist = async (mood: Mood) => {
+  const generatePlaylist = async (moodOrPrompt: string) => {
     try {
       setIsLoading(true);
       setError(null);
       setCurrentStep("generating");
 
-      // Get song recommendations from LLM service
-      const recommendations = await api.getSongRecommendations(mood);
-
+      const recommendations = await api.getSongRecommendations(moodOrPrompt);
       setCurrentStep("fetching");
-      // Generate playlist using backend service
-      const response = await api.generatePlaylist(recommendations);
 
+      const response = await api.generatePlaylist(recommendations);
       setSongs(response.data || []);
       setCurrentStep("complete");
     } catch (err) {
@@ -55,41 +57,23 @@ export const PlaylistGenerator = () => {
     }
   };
 
-  const handleMoodSelect = (mood: Mood) => {
+  const handleMoodSelect = async (mood: Mood) => {
     setCurrentMood(mood);
     setCustomPrompt("");
     setCurrentStep("idle");
-    generatePlaylist(mood);
+    await generatePlaylist(mood);
   };
 
   const handleCustomPrompt = async (prompt: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      setCurrentStep("generating");
-      setCustomPrompt(prompt);
-
-      // Get song recommendations from LLM service with custom prompt
-      const recommendations = await api.getSongRecommendations(prompt);
-
-      setCurrentStep("fetching");
-      // Generate playlist using backend service
-      const response = await api.generatePlaylist(recommendations);
-
-      setSongs(response.data || []);
-      setCurrentStep("complete");
-    } catch (err) {
-      setError("Failed to generate playlist. Please try again.");
-      console.error("Error generating playlist:", err);
-      setCurrentStep("idle");
-    } finally {
-      setIsLoading(false);
-    }
+    setCustomPrompt(prompt);
+    await generatePlaylist(prompt);
   };
+
+  const moodOrPrompt = customPrompt || currentMood;
 
   return (
     <div className="playlist-generator">
-      <Header currentMood={currentMood} customPrompt={customPrompt} />
+      <Toolbar currentMood={currentMood} customPrompt={customPrompt} />
       <div className="content">
         <MoodSelector
           onMoodSelect={handleMoodSelect}
@@ -106,10 +90,11 @@ export const PlaylistGenerator = () => {
         )}
 
         {error && <div className="error-message">{error}</div>}
-
         {songs.length > 0 && (
-          <div className="songs-container">
-            <h2>Recommended Songs</h2>
+          <Box textAlign="center" mt={2}>
+            <Typography variant="h4" my={2}>
+              Recommended Songs
+            </Typography>
             <div className="songs-grid">
               {songs
                 .filter((song) => song.url !== null)
@@ -119,30 +104,22 @@ export const PlaylistGenerator = () => {
                       <h3>{song.title}</h3>
                       <p>{song.artist}</p>
                     </div>
-                    <a
-                      href={song.url!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="spotify-link"
-                    >
-                      Listen on Spotify
-                    </a>
+                    <LinkButton href={song.url!}>Listen on Spotify</LinkButton>
                   </div>
                 ))}
             </div>
-            <button
-              className="regenerate-button"
-              onClick={() => {
+            <ActionButton
+              onClick={async () => {
                 setCurrentStep("idle");
-                if (currentMood) {
-                  generatePlaylist(currentMood);
+                if (moodOrPrompt) {
+                  await generatePlaylist(moodOrPrompt);
                 }
               }}
-              disabled={isLoading || !currentMood}
+              disabled={isLoading || !moodOrPrompt}
             >
               {isLoading ? "Generating..." : "Regenerate Playlist"}
-            </button>
-          </div>
+            </ActionButton>
+          </Box>
         )}
       </div>
     </div>

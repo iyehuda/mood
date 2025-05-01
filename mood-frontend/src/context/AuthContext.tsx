@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   clearToken,
   getStoredToken,
@@ -6,16 +6,7 @@ import {
   getUserProfile,
   User,
 } from "../services/spotifyAuth";
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  accessToken: string | null;
-  logout: () => void;
-  checkingAuth: boolean;
-  user: User | null;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from "./useAuth.tsx";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -73,12 +64,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

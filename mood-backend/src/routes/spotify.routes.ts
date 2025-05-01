@@ -1,5 +1,5 @@
-import { RequestHandler, Router } from 'express';
-import { spotifyController } from '../controllers/spotify.controller';
+import { RequestHandler, Router } from "express";
+import { spotifyController } from "../controllers/spotify.controller";
 
 const router = Router();
 
@@ -88,6 +88,6 @@ const router = Router();
  *                   type: string
  *                   example: "Internal server error"
  */
-router.post('/search-songs', spotifyController.getSongLinks as RequestHandler);
+router.post("/search-songs", spotifyController.getSongLinks as RequestHandler);
 
-export default router; 
+export default router;
