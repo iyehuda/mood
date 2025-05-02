@@ -78,4 +78,25 @@ export const api = {
 
     return response.data;
   },
+
+  // Create Spotify playlist using backend service
+  createSpotifyPlaylist: async (
+    playlistName: string,
+    songs: Song[],
+  ): Promise<{ success: boolean; data?: { playlistUrl: string }; error?: string }> => {
+    const songUris = songs.map((song) => song.uri).filter((uri): uri is string => uri !== null);
+    try {
+      const response = await apiClient.post("/spotify/create-playlist", {
+        playlistName,
+        songUris,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating Spotify playlist:", error);
+      const errorMessage = axios.isAxiosError(error) && error.response?.data?.error
+        ? error.response.data.error
+        : "Failed to create Spotify playlist. Please try again.";
+      return { success: false, error: errorMessage };
+    }
+  },
 };

@@ -90,4 +90,64 @@ const router = Router();
  */
 router.post("/search-songs", spotifyController.getSongLinks as RequestHandler);
 
+/**
+ * @swagger
+ * /spotify/create-playlist:
+ *   post:
+ *     summary: Create a Spotify playlist
+ *     description: Creates a new private Spotify playlist for the user with the given songs.
+ *     tags:
+ *       - Spotify
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - playlistName
+ *               - songUris
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: The Spotify User ID (currently required, needs auth flow later)
+ *                 example: "your_spotify_user_id"
+ *               playlistName:
+ *                 type: string
+ *                 description: Name for the new playlist
+ *                 example: "My Awesome Mood Playlist"
+ *               songUris:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Spotify Track URI (e.g., spotify:track:xxxx)
+ *                   example: "spotify:track:7qiZfU4dY1lWllzX7mPBI3"
+ *                 description: Array of Spotify track URIs to add to the playlist
+ *     responses:
+ *       200:
+ *         description: Successfully created playlist
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     playlistUrl:
+ *                       type: string
+ *                       description: URL of the created Spotify playlist
+ *                       example: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
+ *       400:
+ *         description: Invalid request data
+ *       500:
+ *         description: Internal server error (e.g., failed to communicate with Spotify)
+ */
+router.post('/create-playlist', spotifyController.createPlaylist as RequestHandler);
+
 export default router;
