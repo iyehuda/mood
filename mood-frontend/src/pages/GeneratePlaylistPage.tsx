@@ -4,11 +4,10 @@ import { MoodSelector } from "../components/MoodSelector.tsx";
 import { ProgressBar } from "../components/ProgressBar.tsx";
 import { Toolbar } from "../components/Toolbar.tsx";
 import "../styles/PlaylistGenerator.css";
+import { Mood } from "../components/moods.ts";
+import { Box, Typography } from "@mui/material";
 import { LinkButton } from "../components/buttons/LinkButton.tsx";
 import { ActionButton } from "../components/buttons/ActionButton.tsx";
-import { Box } from "@mui/material";
-import Typography from "@mui/material/Typography";
-import { Mood } from "../components/moods.ts";
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 type PlaylistCreationStatus = "idle" | "creating" | "success" | "error";
@@ -24,9 +23,6 @@ export const GeneratePlaylistPage = () => {
     useState<PlaylistCreationStatus>("idle");
   const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
   const [playlistError, setPlaylistError] = useState<string | null>(null);
-
-  // Check if user is logged in (basic check, needs proper auth flow)
-  // const isLoggedIn = !!getStoredToken(); 
 
   const stepLabels = ["Generating Songs", "Fetching from Spotify"];
   const getCurrentStepNumber = () => {
@@ -79,13 +75,10 @@ export const GeneratePlaylistPage = () => {
   };
 
   const handleCustomPrompt = async (prompt: string) => {
-    // Reset playlist creation state when using a custom prompt
     setPlaylistCreationStatus("idle");
     setPlaylistUrl(null);
     setPlaylistError(null);
-    // Clear the predefined mood when using a custom prompt
-    setCurrentMood(null); 
-
+    setCurrentMood(null);
     setCustomPrompt(prompt);
     await generatePlaylist(prompt);
   };
@@ -98,19 +91,17 @@ export const GeneratePlaylistPage = () => {
       return;
     }
 
-    // Simple playlist name generation, could be improved
     const playlistName = currentMood
       ? `${currentMood.charAt(0).toUpperCase() + currentMood.slice(1)} Mood Playlist`
       : customPrompt
-      ? `${customPrompt.substring(0, 20)}:: Playlist`
-      : "My Mood Playlist";
+        ? `${customPrompt.substring(0, 20)}:: Playlist`
+        : "My Mood Playlist";
 
     setPlaylistCreationStatus("creating");
     setPlaylistError(null);
     setPlaylistUrl(null);
 
     try {
-      // Assumes user token is handled by the api service interceptor
       const result = await api.createSpotifyPlaylist(playlistName, songs);
 
       if (result.success && result.data) {
@@ -129,7 +120,7 @@ export const GeneratePlaylistPage = () => {
 
   return (
     <div className="playlist-generator">
-      <Header currentMood={currentMood} customPrompt={customPrompt} />
+      <Toolbar currentMood={currentMood} customPrompt={customPrompt} />
       <div className="content">
         <MoodSelector
           onMoodSelect={handleMoodSelect}
@@ -148,8 +139,10 @@ export const GeneratePlaylistPage = () => {
         {error && <div className="error-message">{error}</div>}
 
         {songs.length > 0 && (
-          <div className="songs-container">
-            <h2>Recommended Songs</h2>
+          <Box textAlign="center" mt={2}>
+            <Typography variant="h4" my={2}>
+              Recommended Songs
+            </Typography>
             <div className="songs-grid">
               {songs
                 .filter((song) => song.url !== null)
@@ -159,44 +152,29 @@ export const GeneratePlaylistPage = () => {
                       <h3>{song.title}</h3>
                       <p>{song.artist}</p>
                     </div>
-                    <a
-                      href={song.url!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="spotify-link"
-                    >
-                      Listen on Spotify
-                    </a>
+                    <LinkButton href={song.url!}>Listen on Spotify</LinkButton>
                   </div>
                 ))}
             </div>
             {/* Buttons Container */}
             <div className="playlist-actions">
-              <button
-                className="regenerate-button"
-                onClick={() => {
+              <ActionButton
+                onClick={async () => {
                   setCurrentStep("idle");
-                  setPlaylistUrl(null); // Reset playlist URL on regenerate
-                  setPlaylistError(null);
-                  setPlaylistCreationStatus("idle");
-                  if (customPrompt) {
-                    handleCustomPrompt(customPrompt);
-                  } else if (currentMood) {
-                    generatePlaylist(currentMood);
+                  if (moodOrPrompt) {
+                    await generatePlaylist(moodOrPrompt);
                   }
                 }}
-                disabled={isLoading || playlistCreationStatus === "creating"}
+                disabled={isLoading || !moodOrPrompt}
               >
-                {isLoading ? "Generating..." : "Regenerate Songs"}
-              </button>
-              <button
-                className="regenerate-button create-playlist-button"
+                {isLoading ? "Generating..." : "Regenerate Playlist"}
+              </ActionButton>
+              <ActionButton
                 onClick={handleCreateSpotifyPlaylist}
                 disabled={isLoading || playlistCreationStatus === "creating" || songs.length === 0}
-                // Could add disabled={!isLoggedIn} if login status is tracked
               >
                 {playlistCreationStatus === "creating" ? "Creating..." : "Create Spotify Playlist"}
-              </button>
+              </ActionButton>
             </div>
 
             {/* Playlist Creation Result */}
@@ -211,7 +189,7 @@ export const GeneratePlaylistPage = () => {
             {playlistCreationStatus === "error" && playlistError && (
               <div className="error-message">{playlistError}</div>
             )}
-          </div>
+          </Box>
         )}
       </div>
     </div>
