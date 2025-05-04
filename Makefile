@@ -17,7 +17,7 @@ dev:
 	npx concurrently -k \
 	    "cd mood-backend && npm run dev" \
 	    "cd mood-frontend && npm run dev" \
-	    "cd llm-service && uv run uvicorn --reload main:app"
+	    "cd llm-service && uv run fastapi dev"
 
 compose:
 	COMPOSE_BAKE=true docker compose up --build -d

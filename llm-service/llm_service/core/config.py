@@ -1,57 +1,48 @@
-import os
-from typing import Optional
+from typing import Annotated, Any, Literal
 
-import logging
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+from pydantic import (
+    AnyUrl,
+    BeforeValidator,
 )
-logger = logging.getLogger(__name__)
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings:
-    """Application settings and configuration."""
-
-    # API information
-    API_TITLE: str = "Song Recommendation API"
-    API_DESCRIPTION: str = "API for generating song recommendations based on user prompts"
-    API_VERSION: str = "1.0.0"
-
-    # Google API key
-    GOOGLE_API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
-
-    # Model settings
-    MODEL_NAME: str = os.getenv("MODEL_NAME", "gemini-2.0-flash")
-    TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
-
-    # Server settings
-    HOST: str = os.getenv("HOST", "0.0.0.0")
-    PORT: int = int(os.getenv("PORT", "8000"))
-
-    def __init__(self):
-        """Initialize and validate settings."""
-        try:
-            # Validate required environment variables
-            if not self.GOOGLE_API_KEY:
-                raise ValueError("GOOGLE_API_KEY environment variable is required")
-
-            # Set environment variable for Google API key
-            os.environ["GOOGLE_API_KEY"] = self.GOOGLE_API_KEY
-            logger.info("Google API key configured")
-
-            # Log other important settings
-            logger.info(f"Model: {self.MODEL_NAME}, Temperature: {self.TEMPERATURE}")
-            logger.info(f"Server: {self.HOST}:{self.PORT}")
-        except Exception as e:
-            logger.error(f"Error initializing settings: {e}")
-            raise
+def parse_cors(v: Any) -> list[str] | str:
+    if isinstance(v, str) and not v.startswith("["):
+        return [i.strip() for i in v.split(",")]
+    elif isinstance(v, list | str):
+        return v
+    raise ValueError(v)
 
 
-# Create settings instance
-settings = Settings()
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        # Use top level .env file (one level above ./mood-backend/)
+        env_file="../.env",
+        env_ignore_empty=True,
+        extra="ignore",
+    )
+
+    # General configuration
+    ENVIRONMENT: Literal["local", "production"] = "local"
+
+    # FastAPI configuration
+    FRONTEND_HOST: str = "http://localhost:5173"
+    ROOT_PATH: str = ""
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
+
+    @property
+    def all_cors_origins(self) -> list[str]:
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
+            self.FRONTEND_HOST
+        ]
+
+    # Recommendation service configuration
+    GOOGLE_API_KEY: str
+    RECOMMENDATION_MODEL_NAME: str = "gemini-2.0-flash"
+    RECOMMENDATION_MODEL_TEMPERATURE: float = 0.7
+
+
+settings = Settings()  # type: ignore

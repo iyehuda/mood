@@ -5,16 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "asyncio>=3.4.3",
-    "fastapi==0.110.0",
-    "google-generativeai==0.3.1",
-    "httpx>=0.24.0",
-    "langchain==0.1.4",
-    "langchain-core==0.1.17",
-    "langchain-google-genai==0.0.8",
-    "logging>=0.4.9.6",
-    "pydantic==2.6.1",
-    "python-dotenv==1.0.0",
-    "sentry-sdk==1.35.0",
-    "uvicorn==0.27.1",
+    "fastapi[standard]<1.0.0,>=0.114.2",
+    "pydantic>2.0",
+    "pydantic-settings<3.0.0,>=2.2.1",
+    "langchain>=0.3.25",
+    "langchain-core>=0.3.58",
+    "langchain-google-genai>=2.1.4",
 ]
