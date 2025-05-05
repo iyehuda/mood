@@ -2,8 +2,11 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from llm_service.models.recommendations import RecommendedSong, SongRecommendationRequest
 from llm_service.core.config import settings
+from llm_service.models.recommendations import (
+    RecommendedSong,
+    SongRecommendationRequest,
+)
 
 SIMPLE_SONG_RECOMMENDATION_PROMPT = """
 You are a music expert with deep knowledge of songs across all genres, artists, and time periods.

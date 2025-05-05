@@ -1,1 +1,1 @@
-"""Song Recommendation API application.""" 
+"""Song Recommendation API application."""

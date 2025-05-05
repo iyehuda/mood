@@ -148,6 +148,6 @@ router.post("/search-songs", spotifyController.getSongLinks as RequestHandler);
  *       500:
  *         description: Internal server error (e.g., failed to communicate with Spotify)
  */
-router.post('/create-playlist', spotifyController.createPlaylist as RequestHandler);
+router.post("/create-playlist", spotifyController.createPlaylist as RequestHandler);
 
 export default router;

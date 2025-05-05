@@ -108,13 +108,19 @@ export class SpotifyService {
       if (axios.isAxiosError(error) && error.response) {
         console.error("Spotify API Error (Fetching User ID):", error.response.data);
       }
-      throw new Error("Failed to fetch Spotify User ID. Is the token valid and has user-read-private scope?");
+      throw new Error(
+        "Failed to fetch Spotify User ID. Is the token valid and has user-read-private scope?",
+      );
     }
   }
 
   // --- Methods below now require the user's access token to be passed in ---
 
-  private static async addTracksToPlaylist(playlistId: string, songUris: string[], userAccessToken: string): Promise<void> {
+  private static async addTracksToPlaylist(
+    playlistId: string,
+    songUris: string[],
+    userAccessToken: string,
+  ): Promise<void> {
     const MAX_TRACKS_PER_REQUEST = 100;
     for (let index = 0; index < songUris.length; index += MAX_TRACKS_PER_REQUEST) {
       const urisToAdd = songUris.slice(index, index + MAX_TRACKS_PER_REQUEST);
@@ -142,7 +148,11 @@ export class SpotifyService {
     }
   }
 
-  private static async createEmptyPlaylist(userId: string, playlistName: string, userAccessToken: string): Promise<{ playlistId: string; playlistUrl: string }> {
+  private static async createEmptyPlaylist(
+    userId: string,
+    playlistName: string,
+    userAccessToken: string,
+  ): Promise<{ playlistId: string; playlistUrl: string }> {
     try {
       const response = await axios.post(
         `${spotifyConfig.baseUrl}/users/${userId}/playlists`,
@@ -177,7 +187,9 @@ export class SpotifyService {
     const validSongUris = songUris.filter((uri): uri is string => Boolean(uri));
 
     if (validSongUris.length === EMPTY_ARRAY_LENGTH) {
-      console.warn(`No valid Spotify URIs found for playlist "${playlistName}". Playlist will be empty.`);
+      console.warn(
+        `No valid Spotify URIs found for playlist "${playlistName}". Playlist will be empty.`,
+      );
     }
     return validSongUris;
   }
@@ -189,7 +201,11 @@ export class SpotifyService {
       // No need to call ensureAccessToken (which gets client token)
 
       // Create the playlist shell using the fetched userId and passed user token
-      const { playlistId, playlistUrl } = await SpotifyService.createEmptyPlaylist(userId, playlistName, userAccessToken);
+      const { playlistId, playlistUrl } = await SpotifyService.createEmptyPlaylist(
+        userId,
+        playlistName,
+        userAccessToken,
+      );
 
       const validSongUris = SpotifyService.validateAndFilterSongUris(songUris, playlistName);
 
@@ -204,7 +220,9 @@ export class SpotifyService {
       return playlistUrl;
     } catch (error) {
       console.error(`Error in createPlaylist process for "${playlistName}":`, error);
-      throw new Error("Failed to create Spotify playlist. Check backend logs and ensure user token has playlist-modify scopes.");
+      throw new Error(
+        "Failed to create Spotify playlist. Check backend logs and ensure user token has playlist-modify scopes.",
+      );
     }
   }
 }
