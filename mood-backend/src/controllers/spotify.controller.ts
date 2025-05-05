@@ -12,52 +12,59 @@ export const spotifyController = {
   // eslint-disable-next-line max-statements
   createPlaylist: async (req: Request, res: Response): Promise<void> => {
     try {
-        // Extract token from header (adjust header name if frontend uses a different one)
-        const userAccessToken = req.headers['x-spotify-token'] as string;
-        if (!userAccessToken) {
-            // Use BAD_REQUEST or UNAUTHORIZED (401) based on your preference
-            res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Missing Spotify token in x-spotify-token header', success: false });
-            return;
-        }
+      // Extract token from header (adjust header name if frontend uses a different one)
+      const userAccessToken = req.headers["x-spotify-token"] as string;
+      if (!userAccessToken) {
+        // Use BAD_REQUEST or UNAUTHORIZED (401) based on your preference
+        res
+          .status(HTTP_STATUS.BAD_REQUEST)
+          .json({ error: "Missing Spotify token in x-spotify-token header", success: false });
+        return;
+      }
 
-        // Get required data from body
-        const { playlistName, songUris } = req.body;
+      // Get required data from body
+      const { playlistName, songUris } = req.body;
 
-        // Validate body parameters
-        if (!playlistName || typeof playlistName !== 'string') {
-            throw new Error('Invalid request. playlistName is required and must be a string.');
-        }
-        if (!Array.isArray(songUris) || !songUris.every(uri => typeof uri === 'string' || uri === null)) {
-            throw new Error('Invalid request. songUris must be an array of strings or null.');
-        }
+      // Validate body parameters
+      if (!playlistName || typeof playlistName !== "string") {
+        throw new Error("Invalid request. playlistName is required and must be a string.");
+      }
+      if (
+        !Array.isArray(songUris) ||
+        !songUris.every((uri) => typeof uri === "string" || uri === null)
+      ) {
+        throw new Error("Invalid request. songUris must be an array of strings or null.");
+      }
 
-        // Fetch the actual Spotify User ID using the provided token
-        const userId = await SpotifyService.getCurrentUserId(userAccessToken);
+      // Fetch the actual Spotify User ID using the provided token
+      const userId = await SpotifyService.getCurrentUserId(userAccessToken);
 
-        // Filter null URIs before passing to service
-        const validSongUris = songUris.filter((uri): uri is string => uri !== null);
+      // Filter null URIs before passing to service
+      const validSongUris = songUris.filter((uri): uri is string => uri !== null);
 
-        // Call the service with the params object
-        const playlistUrl = await SpotifyService.createPlaylist({
-            playlistName,
-            // Pass the filtered array
-            songUris: validSongUris, 
-            userAccessToken,
-            userId,
-        });
+      // Call the service with the params object
+      const playlistUrl = await SpotifyService.createPlaylist({
+        playlistName,
+        // Pass the filtered array
+        songUris: validSongUris,
+        userAccessToken,
+        userId,
+      });
 
-        res.json({ data: { playlistUrl }, success: true });
+      res.json({ data: { playlistUrl }, success: true });
     } catch (error) {
-        spotifyController.handleError(error, res);
+      spotifyController.handleError(error, res);
     }
   },
   getSongLinks: async (req: Request, res: Response): Promise<void> => {
     try {
       // Extract token from header
-      const userAccessToken = req.headers['x-spotify-token'] as string;
+      const userAccessToken = req.headers["x-spotify-token"] as string;
       if (!userAccessToken) {
-          res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Missing Spotify token in x-spotify-token header', success: false });
-          return;
+        res
+          .status(HTTP_STATUS.BAD_REQUEST)
+          .json({ error: "Missing Spotify token in x-spotify-token header", success: false });
+        return;
       }
 
       const { songs } = req.body;

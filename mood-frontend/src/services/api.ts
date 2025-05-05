@@ -93,9 +93,10 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error("Error creating Spotify playlist:", error);
-      const errorMessage = axios.isAxiosError(error) && error.response?.data?.error
-        ? error.response.data.error
-        : "Failed to create Spotify playlist. Please try again.";
+      const errorMessage =
+        axios.isAxiosError(error) && error.response?.data?.error
+          ? error.response.data.error
+          : "Failed to create Spotify playlist. Please try again.";
       return { success: false, error: errorMessage };
     }
   },

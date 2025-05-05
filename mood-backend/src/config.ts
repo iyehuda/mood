@@ -5,7 +5,7 @@ export enum Environment {
   PROD = "production",
 }
 
-dotenv.config();
+dotenv.config({ path: [".env", "../.env"] });
 const defaults = {
   ENVIRONMENT: Environment.DEV,
   PORT: 3000,

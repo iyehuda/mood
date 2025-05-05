@@ -1,25 +1,25 @@
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH" \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+
 WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Copy dependencies files
-COPY pyproject.toml .
-COPY requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
 
-# Install dependencies
-RUN uv sync
-
-# Copy application code
 COPY . .
 
-# Set environment variables
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync
 
-# Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["uv", "run", "fastapi", "run"]
+CMD ["fastapi", "run", "--workers", "4"]

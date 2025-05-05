@@ -9,9 +9,17 @@ install:
 lint:
 	cd mood-backend && npm run lint
 	cd mood-frontend && npm run lint
+	cd llm-service && \
+		uv run mypy llm_service && \
+		uv run ruff check llm_service --fix && \
+		uv run ruff format llm_service
 
 test:
 	cd mood-backend && npm run test
+	cd llm-service && \
+		uv run coverage run --source=app -m pytest && \
+		uv run coverage report --show-missing && \
+		uv run coverage html --title coverage
 
 dev:
 	npx concurrently -k \
