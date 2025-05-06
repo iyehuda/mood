@@ -51,8 +51,8 @@ export const GeneratePlaylistPage = () => {
       console.log(`Recommendations: ${JSON.stringify(recommendations)}`);
       setCurrentStep("fetching");
 
-      const response = await api.generatePlaylist(recommendations);
-      setSongs(response.data || []);
+      const { songs } = await api.generatePlaylist(recommendations);
+      setSongs(songs);
       setCurrentStep("complete");
     } catch (err) {
       setError("Failed to generate playlist. Please try again.");
@@ -102,15 +102,10 @@ export const GeneratePlaylistPage = () => {
     setPlaylistUrl(null);
 
     try {
-      const result = await api.createSpotifyPlaylist(playlistName, songs);
+      const { playlistUrl } = await api.createSpotifyPlaylist(playlistName, songs);
 
-      if (result.success && result.data) {
-        setPlaylistUrl(result.data.playlistUrl);
-        setPlaylistCreationStatus("success");
-      } else {
-        setPlaylistError(result.error || "Failed to create playlist.");
-        setPlaylistCreationStatus("error");
-      }
+      setPlaylistUrl(playlistUrl);
+      setPlaylistCreationStatus("success");
     } catch (err) {
       console.error("Error calling createSpotifyPlaylist:", err);
       setPlaylistError("An unexpected error occurred while creating the playlist.");

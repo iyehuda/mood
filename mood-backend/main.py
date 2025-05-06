@@ -1,8 +1,9 @@
+import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from llm_service.api.router import api_router
-from llm_service.core.config import settings
+from mood_backend.api.router import api_router
+from mood_backend.core.config import settings
 
 app = FastAPI(
     title="Mood",
@@ -20,3 +21,6 @@ if settings.all_cors_origins:
     )
 
 app.include_router(api_router)
+
+if __name__ == "__main__":
+    uvicorn.run(app)

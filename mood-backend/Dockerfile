@@ -1,36 +1,25 @@
-FROM node:lts-slim AS builder
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH" \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install dependencies
-RUN npm ci
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
 
-# Copy the rest of the application code
 COPY . .
 
-# Build the application
-RUN npm run build
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync
 
-# Production stage
-FROM node:lts-slim
+EXPOSE 8000
 
-WORKDIR /app
-
-# Copy package files for production
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production
-
-# Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Command to run the application
-CMD ["node", "dist/src/index.js"]
+CMD ["fastapi", "run", "--workers", "4"]
