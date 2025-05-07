@@ -1,7 +1,6 @@
 services:
   traefik:
     image: traefik:v3.3.6
-    container_name: traefik
     restart: unless-stopped
     command:
       - "--providers.docker=true"
@@ -14,11 +13,10 @@ services:
     networks:
       - mood-network
 
-  llm-service:
+  mood-backend:
     build:
-      context: ./llm-service
+      context: mood-backend
       dockerfile: Dockerfile
-    container_name: llm-service
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
@@ -27,39 +25,17 @@ services:
       - mood-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.llm.rule=PathPrefix(`/llm`)"
-      - "traefik.http.routers.llm.entrypoints=web"
-      - "traefik.http.middlewares.llm-strip.stripprefix.prefixes=/llm"
-      - "traefik.http.routers.llm.middlewares=llm-strip"
-
-  mood-backend:
-    build:
-      context: ./mood-backend
-      dockerfile: Dockerfile
-    container_name: mood-backend
-    restart: unless-stopped
-    environment:
-      - PORT=3000
-      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
-      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
-    networks:
-      - mood-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/backend`)"
-      - "traefik.http.routers.backend.entrypoints=web"
-      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/backend"
-      - "traefik.http.routers.backend.middlewares=backend-strip"
-
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.middlewares=api-strip"
 
   mood-frontend:
     build:
       context: ./mood-frontend
       dockerfile: Dockerfile
-    container_name: mood-frontend
     restart: unless-stopped
     depends_on:
-      - llm-service
       - mood-backend
     networks:
       - mood-network
@@ -69,5 +45,4 @@ services:
       - "traefik.http.routers.frontend.entrypoints=web"
 
 networks:
-  mood-network:
-    driver: bridge
+  mood-network: {}

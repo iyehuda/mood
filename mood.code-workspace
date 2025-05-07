@@ -9,10 +9,6 @@
       "path": "mood-backend"
     },
     {
-      "name": "llm-service",
-      "path": "llm-service"
-    },
-    {
       "path": "."
     }
   ],

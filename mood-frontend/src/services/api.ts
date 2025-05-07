@@ -1,12 +1,12 @@
 import axios from "axios";
 import { getStoredToken } from "./spotifyAuth";
 
-const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || "llm";
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "backend";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "api";
 
 interface SongRecommendation {
   title: string;
   artist: string;
+  reason: string;
 }
 
 export interface Song {
@@ -17,8 +17,11 @@ export interface Song {
 }
 
 interface SearchResponse {
-  success: boolean;
-  data: Song[];
+  songs: Song[];
+}
+
+interface CreatePlaylistResponse {
+  playlistUrl: string;
 }
 
 const apiClient = axios.create({
@@ -44,31 +47,24 @@ apiClient.interceptors.request.use(
 export const api = {
   // Get song recommendations from LLM service based on mood
   getSongRecommendations: async (mood: string): Promise<SongRecommendation[]> => {
-    const response = await fetch(`${LLM_API_URL}/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        mood: mood,
-        num_songs: 5, // Request 5 songs for the playlist
-      }),
+    const response = await apiClient.post("/recommend", {
+      mood: mood,
+      num_songs: 5,
     });
+    const { data } = response;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("LLM service error:", errorText);
+    if (!data) {
+      console.error("Backend service error:", response);
       throw new Error("Failed to get song recommendations");
     }
 
-    const data = await response.json();
-    return data.songs || [];
+    return data.songs;
   },
 
   // Generate or regenerate playlist using backend service
   generatePlaylist: async (songs: SongRecommendation[]): Promise<SearchResponse> => {
-    const response = await apiClient.post("/spotify/search-songs", {
-      songs,
+    const response = await apiClient.post("/spotify/search", {
+      songs: songs.map(({ artist, title }: SongRecommendation) => ({ artist, title })),
     });
 
     if (!response.data) {
@@ -83,10 +79,10 @@ export const api = {
   createSpotifyPlaylist: async (
     playlistName: string,
     songs: Song[],
-  ): Promise<{ success: boolean; data?: { playlistUrl: string }; error?: string }> => {
+  ): Promise<CreatePlaylistResponse> => {
     const songUris = songs.map((song) => song.uri).filter((uri): uri is string => uri !== null);
     try {
-      const response = await apiClient.post("/spotify/create-playlist", {
+      const response = await apiClient.post("/spotify/playlist", {
         playlistName,
         songUris,
       });
@@ -97,7 +93,7 @@ export const api = {
         axios.isAxiosError(error) && error.response?.data?.error
           ? error.response.data.error
           : "Failed to create Spotify playlist. Please try again.";
-      return { success: false, error: errorMessage };
+      throw new Error(errorMessage);
     }
   },
 };

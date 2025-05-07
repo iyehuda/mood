@@ -2,8 +2,8 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from llm_service.core.config import settings
-from llm_service.models.recommendations import (
+from mood_backend.core.config import settings
+from mood_backend.models.recommendations import (
     RecommendedSong,
     SongRecommendationRequest,
 )

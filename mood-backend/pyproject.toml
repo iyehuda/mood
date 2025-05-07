@@ -1,5 +1,5 @@
 [project]
-name = "llm-service"
+name = "mood-backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -11,6 +11,8 @@ dependencies = [
     "langchain>=0.3.25",
     "langchain-core>=0.3.58",
     "langchain-google-genai>=2.1.4",
+    "httpx>=0.28.1",
+    "fastapi-camelcase>=2.0.0",
 ]
 
 [tool.uv]
