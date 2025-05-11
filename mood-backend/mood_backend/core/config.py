@@ -44,5 +44,8 @@ class Settings(BaseSettings):
     RECOMMENDATION_MODEL_NAME: str = "gemini-2.0-flash"
     RECOMMENDATION_MODEL_TEMPERATURE: float = 0.7
 
+    # MongoDB configuration
+    MONGODB_URI: str = "mongodb://localhost:27017"
+
 
 settings = Settings()  # type: ignore

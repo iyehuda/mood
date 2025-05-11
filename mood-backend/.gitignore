@@ -120,7 +120,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -166,5 +165,4 @@ poetry.toml
 .mirrord/
 
 # Environment variables
-.env
 .env.*

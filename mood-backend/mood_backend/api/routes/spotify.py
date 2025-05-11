@@ -1,14 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Path
 
 from mood_backend.models.spotify import (
     CreatePlaylistRequest,
     CreatePlaylistResponse,
     SearchSongsRequest,
     SearchSongsResponse,
+    SavedPlaylist,
 )
-from mood_backend.services.spotify_service import SpotifyContext, SpotifyService
+from mood_backend.services.spotify_service import SpotifyContext, SpotifyService, save_playlist_to_db, get_saved_playlists_for_user, delete_playlist_by_id
 
 router = APIRouter(tags=["Spotify"])
 
@@ -47,3 +48,42 @@ async def create_playlist(
     return CreatePlaylistResponse(
         playlist_url=await spotify_service.create_playlist(request, spotify_context),
     )
+
+
+@router.post(
+    "/playlist/save",
+    response_model=SavedPlaylist,
+)
+async def save_playlist(
+    playlist_name: str,
+    playlist_url: str,
+    spotify_context: SpotifyContext = Depends(get_spotify_context),
+    spotify_service: SpotifyService = Depends(SpotifyService),
+):
+    user_id = await spotify_service._get_spotify_user_id(spotify_context)
+    return await save_playlist_to_db(user_id, playlist_name, playlist_url)
+
+
+@router.get(
+    "/playlists",
+    response_model=list[SavedPlaylist],
+)
+async def get_playlists(
+    spotify_context: SpotifyContext = Depends(get_spotify_context),
+    spotify_service: SpotifyService = Depends(SpotifyService),
+):
+    user_id = await spotify_service._get_spotify_user_id(spotify_context)
+    return await get_saved_playlists_for_user(user_id)
+
+
+@router.delete(
+    "/playlist/{playlist_id}",
+    response_model=bool,
+)
+async def delete_playlist(
+    playlist_id: str = Path(..., description="MongoDB playlist _id"),
+    spotify_context: SpotifyContext = Depends(get_spotify_context),
+    spotify_service: SpotifyService = Depends(SpotifyService),
+):
+    user_id = await spotify_service._get_spotify_user_id(spotify_context)
+    return await delete_playlist_by_id(playlist_id, user_id)

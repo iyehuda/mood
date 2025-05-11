@@ -106,4 +106,24 @@ export const api = {
       throw new Error(errorMessage);
     }
   },
+
+  // Save a playlist to the backend DB
+  savePlaylist: async (playlistName: string, playlistUrl: string): Promise<any> => {
+    const response = await apiClient.post("/spotify/playlist/save", null, {
+      params: { playlist_name: playlistName, playlist_url: playlistUrl },
+    });
+    return response.data;
+  },
+
+  // Get all saved playlists for the logged-in user
+  getSavedPlaylists: async (): Promise<any[]> => {
+    const response = await apiClient.get("/spotify/playlists");
+    return response.data;
+  },
+
+  // Delete a saved playlist by its MongoDB _id
+  deleteSavedPlaylist: async (playlistId: string): Promise<boolean> => {
+    const response = await apiClient.delete(`/spotify/playlist/${playlistId}`);
+    return response.data;
+  },
 };

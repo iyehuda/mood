@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api, Song } from "../services/api.ts";
 import { MoodSelector } from "../components/MoodSelector.tsx";
 import { ProgressBar } from "../components/ProgressBar.tsx";
 import { Toolbar } from "../components/Toolbar.tsx";
 import "../styles/PlaylistGenerator.css";
 import { Mood } from "../components/moods.ts";
+<<<<<<< HEAD
 import { Box, Typography, IconButton, Tooltip, Modal, Backdrop } from "@mui/material";
 import { LinkButton } from "../components/buttons/LinkButton.tsx";
 import { ActionButton } from "../components/buttons/ActionButton.tsx";
@@ -14,9 +15,24 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+=======
+import { Box, Typography, Button, Card, CardContent, Container, Grid, CircularProgress } from "@mui/material";
+import { LinkButton } from "../components/buttons/LinkButton.tsx";
+import { ActionButton } from "../components/buttons/ActionButton.tsx";
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import DeleteIcon from '@mui/icons-material/Delete';
+>>>>>>> c1b99dd (Implement playlist management features with MongoDB integration)
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 type PlaylistCreationStatus = "idle" | "creating" | "success" | "error";
+
+interface SavedPlaylist {
+  _id?: string;
+  user_id: string;
+  playlist_name: string;
+  playlist_url: string;
+  created_at: string;
+}
 
 export const GeneratePlaylistPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +45,9 @@ export const GeneratePlaylistPage = () => {
     useState<PlaylistCreationStatus>("idle");
   const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
   const [playlistError, setPlaylistError] = useState<string | null>(null);
+  const [savedPlaylists, setSavedPlaylists] = useState<SavedPlaylist[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(true);
+  const [savedError, setSavedError] = useState<string | null>(null);
 
   const stepLabels = ["Generating Songs", "Fetching from Spotify"];
   const getCurrentStepNumber = () => {
@@ -120,9 +139,15 @@ export const GeneratePlaylistPage = () => {
 
     try {
       const { playlistUrl } = await api.createSpotifyPlaylist(playlistName, songs);
-
       setPlaylistUrl(playlistUrl);
       setPlaylistCreationStatus("success");
+      // Save to backend DB and update local list
+      try {
+        const saved = await api.savePlaylist(playlistName, playlistUrl);
+        setSavedPlaylists((prev) => [saved, ...prev]);
+      } catch (err) {
+        console.error("Failed to save playlist to DB", err);
+      }
     } catch (err) {
       console.error("Error calling createSpotifyPlaylist:", err);
       setPlaylistError("An unexpected error occurred while creating the playlist.");
@@ -130,6 +155,7 @@ export const GeneratePlaylistPage = () => {
     }
   };
 
+<<<<<<< HEAD
   // Framer Motion variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -185,6 +211,33 @@ export const GeneratePlaylistPage = () => {
         stiffness: 100,
         damping: 15
       }
+=======
+  useEffect(() => {
+    const fetchSaved = async () => {
+      setLoadingSaved(true);
+      setSavedError(null);
+      try {
+        const data = await api.getSavedPlaylists();
+        setSavedPlaylists(data);
+      } catch (err) {
+        setSavedError("Failed to load saved playlists.");
+      } finally {
+        setLoadingSaved(false);
+      }
+    };
+    fetchSaved();
+  }, []);
+
+  // Delete a saved playlist
+  const handleDeletePlaylist = async (playlistId: string | undefined) => {
+    if (!playlistId) return;
+    try {
+      await api.deleteSavedPlaylist(playlistId);
+      setSavedPlaylists((prev) => prev.filter((p) => p._id !== playlistId && p._id !== playlistId));
+    } catch (err) {
+      // Optionally show an error message
+      console.error('Failed to delete playlist', err);
+>>>>>>> c1b99dd (Implement playlist management features with MongoDB integration)
     }
   };
 
@@ -371,6 +424,7 @@ export const GeneratePlaylistPage = () => {
                   <Typography variant="body1">No songs found. Try regenerating the playlist.</Typography>
                 )}
               </div>
+<<<<<<< HEAD
               
               <AnimatePresence mode="wait">
                 {playlistCreationStatus === "success" && playlistUrl && (
@@ -509,6 +563,67 @@ export const GeneratePlaylistPage = () => {
           )}
         </AnimatePresence>
       </motion.div>
+=======
+            )}
+            {playlistCreationStatus === "error" && playlistError && (
+              <div className="error-message">{playlistError}</div>
+            )}
+          </Box>
+        )}
+
+        {/* Saved Playlists Section */}
+        <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+          <Typography variant="h4" my={2} textAlign="center">
+            Your Saved Playlists
+          </Typography>
+          {loadingSaved && <Box my={3}><CircularProgress /></Box>}
+          {savedError && <Typography color="error">{savedError}</Typography>}
+          {!loadingSaved && savedPlaylists.length === 0 && (
+            <Box display="flex" flexDirection="column" alignItems="center" my={4}>
+              <PlaylistAddCheckIcon sx={{ fontSize: 48, color: "grey.500" }} />
+              <Typography color="text.secondary" mt={2}>
+                You haven't saved any playlists yet.
+              </Typography>
+            </Box>
+          )}
+          <Grid container spacing={3} justifyContent="center">
+            {savedPlaylists.map((playlist) => {
+              return (
+                <Grid item xs={12} sm={6} md={4} key={playlist.id || playlist._id || playlist.playlist_url}>
+                  <Card sx={{ borderRadius: 3, boxShadow: 2, bgcolor: '#23232b', position: 'relative' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        {playlist.playlist_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" mb={1}>
+                        Saved on {new Date(playlist.created_at).toLocaleString()}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        href={playlist.playlist_url}
+                        target="_blank"
+                        fullWidth
+                        sx={{ mt: 1, bgcolor: '#19d16f', color: '#fff', fontWeight: 700, '&:hover': { bgcolor: '#13b85a' } }}
+                      >
+                        Open Playlist
+                      </Button>
+                      <Button
+                        onClick={() => handleDeletePlaylist(playlist.id || playlist._id)}
+                        size="small"
+                        sx={{ position: 'absolute', top: 8, right: 8, minWidth: 0, color: '#ff4757', bgcolor: 'transparent', '&:hover': { bgcolor: 'rgba(255,71,87,0.1)' } }}
+                      >
+                        <DeleteIcon />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Container>
+      </div>
+>>>>>>> c1b99dd (Implement playlist management features with MongoDB integration)
     </div>
   );
 };
