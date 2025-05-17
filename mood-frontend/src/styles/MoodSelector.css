@@ -2,17 +2,137 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+}
+
+.mood-title-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.mood-buttons-container {
+  width: 100%;
+  margin-bottom: 2rem;
 }
 
 .mood-buttons-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
   width: 100%;
+  padding: 0 1rem;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  position: relative;
+}
+
+/* Animation for search focus */
+.search-container:focus-within {
+  transform: scale(1.02);
+}
+
+/* Sparkle animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+}
+
+.search-container::before,
+.search-container::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: rgba(241, 81, 86, 0.3);
+  border-radius: 50%;
+  z-index: 1;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.search-container::before {
+  top: 0;
+  right: 30%;
+  animation-delay: 0.3s;
+}
+
+.search-container::after {
+  bottom: 10px;
+  right: 20%;
+  animation-delay: 1s;
+}
+
+/* Additional sparkles */
+.search-container .sparkle-1,
+.search-container .sparkle-2 {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background-color: rgba(241, 81, 86, 0.2);
+  border-radius: 50%;
+  z-index: 1;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.search-container .sparkle-1 {
+  top: -10px;
+  right: 40%;
+  animation-delay: 0.7s;
+}
+
+.search-container .sparkle-2 {
+  bottom: -5px;
+  right: 35%;
+  animation-delay: 1.5s;
+}
+
+/* Star glow effect */
+.star-icon-container {
+  position: relative;
+}
+
+.star-icon-container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(241, 81, 86, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(4px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.star-icon-container:hover::after {
+  opacity: 1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .mood-selector-container {
+    gap: 1.5rem;
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .mood-buttons-row {
+    gap: 0.75rem;
+  }
+  
+  .search-container {
+    margin: 1rem auto;
+  }
 }
 
 .custom-prompt-form {

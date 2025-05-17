@@ -8,6 +8,7 @@ import { Mood } from "../components/moods.ts";
 import { Box, Typography } from "@mui/material";
 import { LinkButton } from "../components/buttons/LinkButton.tsx";
 import { ActionButton } from "../components/buttons/ActionButton.tsx";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Step = "idle" | "generating" | "fetching" | "complete";
 type PlaylistCreationStatus = "idle" | "creating" | "success" | "error";
@@ -113,10 +114,72 @@ export const GeneratePlaylistPage = () => {
     }
   };
 
+  // Framer Motion variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const songCardVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring",
+        damping: 12 
+      }
+    }
+  };
+
+  const errorVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: -30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
     <div className="playlist-generator">
       <Toolbar currentMood={currentMood} customPrompt={customPrompt} />
-      <div className="content">
+      <motion.div 
+        className="content"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         <MoodSelector
           onMoodSelect={handleMoodSelect}
           onCustomPrompt={handleCustomPrompt}
@@ -124,69 +187,142 @@ export const GeneratePlaylistPage = () => {
         />
 
         {isLoading && (
-          <ProgressBar
-            currentStep={getCurrentStepNumber()}
-            totalSteps={2}
-            stepLabels={stepLabels}
-          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <ProgressBar
+              currentStep={getCurrentStepNumber()}
+              totalSteps={2}
+              stepLabels={stepLabels}
+            />
+          </motion.div>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              className="error-message"
+              variants={errorVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {songs.length > 0 && (
-          <Box textAlign="center" mt={2}>
-            <Typography variant="h4" my={2}>
-              Recommended Songs
-            </Typography>
-            <div className="songs-grid">
-              {songs
-                .filter((song) => song.url !== null)
-                .map((song, index) => (
-                  <div key={index} className="song-card">
-                    <div className="song-info">
-                      <h3>{song.title}</h3>
-                      <p>{song.artist}</p>
-                    </div>
-                    <LinkButton href={song.url!}>Listen on Spotify</LinkButton>
-                  </div>
-                ))}
-            </div>
-            {/* Buttons Container */}
-            <div className="playlist-actions">
-              <ActionButton
-                onClick={async () => {
-                  setCurrentStep("idle");
-                  if (moodOrPrompt) {
-                    await generatePlaylist(moodOrPrompt);
-                  }
-                }}
-                disabled={isLoading || !moodOrPrompt}
+        <AnimatePresence>
+          {songs.length > 0 && (
+            <Box 
+              component={motion.div}
+              textAlign="center" 
+              mt={2}
+              width="100%"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div variants={titleVariants}>
+                <Typography 
+                  variant="h4" 
+                  my={2}
+                  sx={{
+                    fontWeight: 700,
+                    letterSpacing: "-0.5px",
+                    background: "linear-gradient(45deg, #ffffff 30%, #f0f0f0 90%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    filter: "drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2))"
+                  }}
+                >
+                  Recommended Songs
+                </Typography>
+              </motion.div>
+              
+              <motion.div 
+                className="songs-grid"
+                variants={containerVariants}
               >
-                {isLoading ? "Generating..." : "Regenerate Playlist"}
-              </ActionButton>
-              <ActionButton
-                onClick={handleCreateSpotifyPlaylist}
-                disabled={isLoading || playlistCreationStatus === "creating" || songs.length === 0}
+                {songs
+                  .filter((song) => song.url !== null)
+                  .map((song, index) => (
+                    <motion.div 
+                      key={index}
+                      className="song-card"
+                      variants={songCardVariants}
+                      custom={index}
+                    >
+                      <div className="song-info">
+                        <h3>{song.title}</h3>
+                        <p>{song.artist}</p>
+                      </div>
+                      <LinkButton href={song.url!}>Listen on Spotify</LinkButton>
+                    </motion.div>
+                  ))}
+              </motion.div>
+              
+              <motion.div 
+                className="playlist-actions"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
               >
-                {playlistCreationStatus === "creating" ? "Creating..." : "Create Spotify Playlist"}
-              </ActionButton>
-            </div>
+                <ActionButton
+                  onClick={async () => {
+                    setCurrentStep("idle");
+                    if (moodOrPrompt) {
+                      await generatePlaylist(moodOrPrompt);
+                    }
+                  }}
+                  disabled={isLoading || !moodOrPrompt}
+                >
+                  {isLoading ? "Generating..." : "Regenerate Playlist"}
+                </ActionButton>
+                <ActionButton
+                  onClick={handleCreateSpotifyPlaylist}
+                  disabled={isLoading || playlistCreationStatus === "creating" || songs.length === 0}
+                >
+                  {playlistCreationStatus === "creating" ? "Creating..." : "Create Spotify Playlist"}
+                </ActionButton>
+              </motion.div>
 
-            {/* Playlist Creation Result */}
-            {playlistCreationStatus === "success" && playlistUrl && (
-              <div className="playlist-success">
-                Playlist created successfully!{" "}
-                <a href={playlistUrl} target="_blank" rel="noopener noreferrer">
-                  Open Playlist
-                </a>
-              </div>
-            )}
-            {playlistCreationStatus === "error" && playlistError && (
-              <div className="error-message">{playlistError}</div>
-            )}
-          </Box>
-        )}
-      </div>
+              <AnimatePresence>
+                {playlistCreationStatus === "success" && playlistUrl && (
+                  <motion.div 
+                    className="playlist-success"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    Playlist created successfully!{" "}
+                    <a href={playlistUrl} target="_blank" rel="noopener noreferrer">
+                      Open Playlist
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <AnimatePresence>
+                {playlistCreationStatus === "error" && playlistError && (
+                  <motion.div 
+                    className="error-message"
+                    variants={errorVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {playlistError}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Box>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
