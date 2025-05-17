@@ -6,6 +6,7 @@ import { SpotifyLogo } from "../components/logos/SpotifyLogo.tsx";
 import { ActionButton } from "../components/buttons/ActionButton.tsx";
 import { motion } from "framer-motion";
 import { moodColors, Mood } from "../components/moods";
+import "./LoginPage.css";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -106,6 +107,19 @@ const MoodBubble = ({ mood, size, delay }: { mood: Mood, size: number, delay: nu
   );
 };
 
+// Create an equalizer component with animated bars
+const Equalizer = ({ className }: { className: string }) => {
+  return (
+    <div className={className}>
+      <div className="login-equalizer-bar"></div>
+      <div className="login-equalizer-bar"></div>
+      <div className="login-equalizer-bar"></div>
+      <div className="login-equalizer-bar"></div>
+      <div className="login-equalizer-bar"></div>
+    </div>
+  );
+};
+
 export const LoginPage: React.FC = () => {
   const handleSpotifyLogin = () => {
     window.location.href = getAuthUrl();
@@ -152,9 +166,44 @@ export const LoginPage: React.FC = () => {
         position: "relative",
         overflow: "hidden",
       }}
+      className="login-container"
     >
       <BackgroundGradient />
       <GlowEffect />
+      
+      {/* Animated background particles */}
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      <div className="login-particle"></div>
+      
+      {/* Music notes */}
+      <div className="login-music-note">♪</div>
+      <div className="login-music-note">♫</div>
+      <div className="login-music-note">♩</div>
+      <div className="login-music-note">♬</div>
+      <div className="login-music-note">♪</div>
+      <div className="login-music-note">♫</div>
+      <div className="login-music-note">♩</div>
+      <div className="login-music-note">♬</div>
+      
+      {/* Vinyl records */}
+      <div className="login-vinyl"></div>
+      <div className="login-vinyl"></div>
+      <div className="login-vinyl"></div>
+      
+      {/* Equalizer bars */}
+      <Equalizer className="login-equalizer" />
+      <Equalizer className="login-equalizer" />
+      
+      {/* Glowing shapes */}
+      <div className="login-glow-shape"></div>
+      <div className="login-glow-shape"></div>
+      <div className="login-glow-shape"></div>
       
       {/* Mood bubbles floating in the background */}
       {moodBubbles}
@@ -251,20 +300,19 @@ export const LoginPage: React.FC = () => {
         style={{
           position: 'absolute',
           top: '15%',
-          left: '25%',
+          left: '20%',
           zIndex: 1,
-          color: 'rgba(255, 215, 0, 0.7)' // happy mood color
+          color: 'rgba(241, 81, 86, 0.6)'
         }}
         animate={{ 
-          opacity: [0.3, 0.7, 0.3], 
-          scale: [0.7, 1, 0.7],
+          opacity: [0.3, 0.6, 0.3], 
+          scale: [1, 1.5, 1],
           rotate: [0, -180, -360]
         }}
         transition={{
-          duration: 10,
+          duration: 15,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 2
         }}
       >
         <path d="M10 0L12.5 7.5H20L13.75 12.5L16.25 20L10 15L3.75 20L6.25 12.5L0 7.5H7.5L10 0Z" fill="currentColor" />
