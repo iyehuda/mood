@@ -21,6 +21,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - MONGODB_URI=mongodb://mongo:27017
     networks:
       - mood-network
     labels:
@@ -29,6 +30,8 @@ services:
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
       - "traefik.http.routers.api.middlewares=api-strip"
+    depends_on:
+      - mongo
 
   mood-frontend:
     build:
@@ -44,5 +47,18 @@ services:
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=web"
 
+  mongo:
+    image: mongo:7.0
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mood-network
+
 networks:
   mood-network: {}
+
+volumes:
+  mongo-data:

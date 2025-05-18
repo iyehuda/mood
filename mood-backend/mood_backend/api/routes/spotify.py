@@ -9,7 +9,8 @@ from mood_backend.models.spotify import (
     SearchSongsResponse,
     SavedPlaylist,
 )
-from mood_backend.services.spotify_service import SpotifyContext, SpotifyService, save_playlist_to_db, get_saved_playlists_for_user, delete_playlist_by_id
+from mood_backend.services.spotify_service import SpotifyContext, SpotifyService
+from mood_backend.services.playlist_service import PlaylistService
 
 router = APIRouter(tags=["Spotify"])
 
@@ -20,6 +21,16 @@ async def get_spotify_context(
     if not x_spotify_token:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return SpotifyContext(access_token=x_spotify_token)
+
+
+async def get_spotify_user_id(
+    spotify_context: SpotifyContext = Depends(get_spotify_context),
+    spotify_service: SpotifyService = Depends(SpotifyService),
+) -> str:
+    return await spotify_service._get_spotify_user_id(spotify_context)
+
+
+SpotifyUserID = Annotated[str, Depends(get_spotify_user_id)]
 
 
 @router.post(
@@ -57,11 +68,9 @@ async def create_playlist(
 async def save_playlist(
     playlist_name: str,
     playlist_url: str,
-    spotify_context: SpotifyContext = Depends(get_spotify_context),
-    spotify_service: SpotifyService = Depends(SpotifyService),
+    user_id: SpotifyUserID,
 ):
-    user_id = await spotify_service._get_spotify_user_id(spotify_context)
-    return await save_playlist_to_db(user_id, playlist_name, playlist_url)
+    return await PlaylistService.save_playlist_to_db(user_id, playlist_name, playlist_url)
 
 
 @router.get(
@@ -69,11 +78,9 @@ async def save_playlist(
     response_model=list[SavedPlaylist],
 )
 async def get_playlists(
-    spotify_context: SpotifyContext = Depends(get_spotify_context),
-    spotify_service: SpotifyService = Depends(SpotifyService),
+    user_id: SpotifyUserID,
 ):
-    user_id = await spotify_service._get_spotify_user_id(spotify_context)
-    return await get_saved_playlists_for_user(user_id)
+    return await PlaylistService.get_saved_playlists_for_user(user_id)
 
 
 @router.delete(
@@ -81,9 +88,7 @@ async def get_playlists(
     response_model=bool,
 )
 async def delete_playlist(
-    playlist_id: str = Path(..., description="MongoDB playlist _id"),
-    spotify_context: SpotifyContext = Depends(get_spotify_context),
-    spotify_service: SpotifyService = Depends(SpotifyService),
+    user_id: SpotifyUserID,
+    playlist_id: str,
 ):
-    user_id = await spotify_service._get_spotify_user_id(spotify_context)
-    return await delete_playlist_by_id(playlist_id, user_id)
+    return await PlaylistService.delete_playlist_by_id(playlist_id, user_id)
