@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, List
 
 from pydantic import (
     AnyUrl,
@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str
     RECOMMENDATION_MODEL_NAME: str = "gemini-2.0-flash"
     RECOMMENDATION_MODEL_TEMPERATURE: float = 0.7
+
+    # Playlist scheduler settings
+    PLAYLIST_SCHEDULE_HOUR: int = 0  # Default to midnight
+    PLAYLIST_SCHEDULE_MINUTE: int = 0
 
 
 settings = Settings()  # type: ignore
