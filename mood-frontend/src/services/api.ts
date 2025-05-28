@@ -63,15 +63,25 @@ export const api = {
 
   // Generate or regenerate playlist using backend service
   generatePlaylist: async (songs: SongRecommendation[]): Promise<SearchResponse> => {
+    console.log("Sending search request with songs:", songs);
+    
     const response = await apiClient.post("/spotify/search", {
       songs: songs.map(({ artist, title }: SongRecommendation) => ({ artist, title })),
     });
 
+    console.log("Raw response from /spotify/search:", response);
+
     if (!response.data) {
-      console.error("Backend service error:", response);
-      throw new Error("Failed to generate playlist");
+      console.error("Backend service error: empty response data");
+      throw new Error("Failed to generate playlist - empty response");
     }
 
+    if (!response.data.songs || !Array.isArray(response.data.songs)) {
+      console.error("Invalid response format:", response.data);
+      throw new Error("Failed to generate playlist - invalid response format");
+    }
+
+    console.log(`Successfully fetched ${response.data.songs.length} songs from Spotify`);
     return response.data;
   },
 
