@@ -1,5 +1,6 @@
 from fastapi_camelcase import CamelModel
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class SongSearch(BaseModel):
@@ -29,3 +30,20 @@ class CreatePlaylistRequest(CamelModel):
 
 class CreatePlaylistResponse(CamelModel):
     playlist_url: str
+
+
+class ScheduledPlaylistRegeneration(CamelModel):
+    playlist_id: str
+    interval_hours: int
+    last_regeneration: datetime | None = None
+    next_regeneration: datetime | None = None
+
+
+class SchedulePlaylistRequest(CamelModel):
+    playlist_id: str
+    interval_hours: int
+
+
+class SchedulePlaylistResponse(CamelModel):
+    success: bool
+    next_regeneration: datetime
