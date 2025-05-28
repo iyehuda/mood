@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from mood_backend.api.routes import spotify, playlist
 from mood_backend.services.spotify_service import SpotifyService
@@ -17,7 +17,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.all_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,6 +27,10 @@ app.add_middleware(
 spotify_service = SpotifyService()
 playlist_service = PlaylistService(spotify_service)
 scheduler_service = SchedulerService(playlist_service)
+
+# Dependency for getting scheduler service
+def get_scheduler_service() -> SchedulerService:
+    return scheduler_service
 
 # Include routers
 app.include_router(spotify.router, prefix="/spotify")
