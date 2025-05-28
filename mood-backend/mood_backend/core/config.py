@@ -44,5 +44,10 @@ class Settings(BaseSettings):
     RECOMMENDATION_MODEL_NAME: str = "gemini-2.0-flash"
     RECOMMENDATION_MODEL_TEMPERATURE: float = 0.7
 
+    # Playlist regeneration configuration
+    DEFAULT_REGENERATION_INTERVAL_HOURS: int = 24
+    MIN_REGENERATION_INTERVAL_HOURS: int = 1
+    MAX_REGENERATION_INTERVAL_HOURS: int = 168  # 1 week
+
 
 settings = Settings()  # type: ignore
