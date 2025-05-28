@@ -13,6 +13,7 @@ dependencies = [
     "langchain-google-genai>=2.1.4",
     "httpx>=0.28.1",
     "fastapi-camelcase>=2.0.0",
+    "apscheduler>=3.10.4",
 ]
 
 [tool.uv]

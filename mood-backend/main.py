@@ -34,8 +34,8 @@ app.include_router(playlist.router, prefix="/playlist")
 
 @app.on_event("startup")
 async def startup_event():
-    # Start the scheduler in the background
-    asyncio.create_task(scheduler_service.start_scheduler())
+    # Start the scheduler
+    scheduler_service.start_scheduler()
 
 @app.on_event("shutdown")
 async def shutdown_event():
