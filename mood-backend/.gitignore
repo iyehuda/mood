@@ -166,5 +166,4 @@ poetry.toml
 .mirrord/
 
 # Environment variables
-.env
 .env.*

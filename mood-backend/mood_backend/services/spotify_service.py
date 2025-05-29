@@ -2,8 +2,15 @@ import asyncio
 from dataclasses import dataclass
 
 import httpx
+from motor.motor_asyncio import AsyncIOMotorClient
+from mood_backend.core.config import settings
+from mood_backend.models.spotify import CreatePlaylistRequest, SongResult, SongSearch, SavedPlaylist
+from bson import ObjectId
 
-from mood_backend.models.spotify import CreatePlaylistRequest, SongResult, SongSearch
+# MongoDB client and collection setup
+mongo_client = AsyncIOMotorClient(settings.MONGODB_URI)
+db = mongo_client.get_default_database()
+playlists_collection = db["playlists"]
 
 
 @dataclass
