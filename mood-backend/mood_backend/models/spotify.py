@@ -13,6 +13,7 @@ class SongResult(BaseModel):
     artist: str
     url: str
     uri: str
+    image_url: str | None = None
 
 
 class SearchSongsRequest(BaseModel):

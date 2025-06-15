@@ -64,6 +64,7 @@ class SpotifyService:
             artist=tracks[0]["artists"][0]["name"],
             url=tracks[0]["external_urls"]["spotify"],
             uri=tracks[0]["uri"],
+            image_url=tracks[0]["album"]["images"][0]["url"] if tracks[0]["album"]["images"] else None,
         )
 
     async def create_playlist(

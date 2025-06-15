@@ -14,6 +14,7 @@ export interface Song {
   title: string;
   uri: string | null;
   url: string | null;
+  image_url: string | null;
 }
 
 interface SearchResponse {

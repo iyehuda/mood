@@ -196,6 +196,18 @@ export const GeneratePlaylistPage = () => {
                 .map((song, index) => (
                   <div key={index} className="song-card">
                     <div className="song-info">
+                      {song.image_url ? (
+                        <img 
+                          src={song.image_url} 
+                          alt={`${song.title} album art`} 
+                          className="album-art"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <MusicNoteIcon className={`music-icon ${song.image_url ? 'hidden' : ''}`} />
                       <h3>{song.title}</h3>
                       <p>{song.artist}</p>
                     </div>
