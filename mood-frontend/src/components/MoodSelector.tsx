@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import "../styles/MoodSelector.css";
-import { ActionButton } from "./buttons/ActionButton.tsx";
 import { MoodButton } from "./buttons/MoodButton.tsx";
 import { Mood, moodColors } from "./moods.ts";
-import Grid from "@mui/material/Grid2";
 import { motion } from "framer-motion";
-import { Box, Typography, InputBase, Paper, IconButton } from "@mui/material";
+import { Typography, InputBase, Paper, IconButton } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 interface MoodSelectorProps {

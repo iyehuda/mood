@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material/styles';
-import { moodColors } from '../components/moods';
 
 // Create a Spotify-inspired theme while retaining the project's mood colors
 const theme = createTheme({
