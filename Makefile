@@ -20,7 +20,7 @@ test:
 
 dev:
 	npx concurrently -k \
-	    "cd mood-frontend && npm run dev" \
+	    ""cd mood-frontend && npm run dev \
 	    "cd mood-backend && uv run fastapi dev"
 
 compose:

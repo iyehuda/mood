@@ -5,14 +5,11 @@ import { ProgressBar } from "../components/ProgressBar.tsx";
 import { Toolbar } from "../components/Toolbar.tsx";
 import "../styles/PlaylistGenerator.css";
 import { Mood } from "../components/moods.ts";
-import { Box, Typography, IconButton, Tooltip, Modal, Backdrop, Container, Grid, Button } from "@mui/material";
+import { Box, Typography, Container, Button } from "@mui/material";
 import { LinkButton } from "../components/buttons/LinkButton.tsx";
 import { ActionButton } from "../components/buttons/ActionButton.tsx";
-import { motion, AnimatePresence } from "framer-motion";
-import RefreshIcon from '@mui/icons-material/Refresh';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { motion } from "framer-motion";
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 
